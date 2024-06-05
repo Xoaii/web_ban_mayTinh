@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="reset.css" rel="stylesheet" />
+    <link href="styles.css" rel="stylesheet" />
+    <script src="/giaodien/mycode.js"></script>
+    <title>Document</title>
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <img src="images/logo.png" alt="">
+        </div>
+        <div class="menu">
+            <li> <a href="">PC - Máy tính chơi game làm việc</a>
+                <ul class="sub-menu">
+                    <li> <a href="/giaodien/cartegory.html">PC workstation</a></li>
+                    <li><a href="">PC chơi game</a></li>
+                </ul>
+                
+            </li>
+            <li><a href="">PC GIẢ LẬP ẢO HÓA</a></li>
+            <li><a href="">Linh kiện máy tính</a>
+                <ul class="sub-menu">
+                    <li><a href="">CPU</a></li>
+                    <li><a href="">MAINBOARD</a></li>
+                    <li><a href="">RAM</a></li>
+                    <li><a href="">VGA</a></li>
+                    <li><a href="">SSD/HDD</a></li>
+                    <li><a href="">TẢN NHIỆT</a></li>
+                    <li><a href="">NGUỒN(PSU)</a></li>
+                    <li><a href="">VỎ CASE</a></li>
+                </ul>
+            </li>
+            <li></li>
+            <li><a href="">Màn hình</a></li>
+            <li><a href="">GAMING GEAR</a>
+                <ul class="sub-menu">
+                    <li><a href="">CHUỘT</a></li>
+                    <li><a href="">TAI NGHE</a></li>
+                    <li><a href="">BÀN PHÍM</a></li>
+                    <li><a href="">TAY CẦM</a></li>
+                    
+                </ul>
+            </li>
+
+        </div>
+        <div class="others">
+            <li  class="input"><input placeholder="Tìm kiếm" type="text" name="" id=""><i>
+                <img src="images/findicon.png" alt="">
+            </i>
+        </li>
+        <li><a class="icon user" href="">
+            <img src="/giaodien/images/user_1144760.png" alt="">
+        </a></li>
+        <li><a class="icon cart" href="">
+            <img src="/giaodien/images/shopping-cart.png" alt="">
+        </a></li>
+        </div>
+        
+    </header>
+    <div class ="dienthoai">
+        <li>SĐT:0336097717</li>
+        <li>ĐỊA CHỈ: CẦU MÂY-PHÚ BÌNH-THÁI NGUYÊN</li>
+        <li>Email: phamtuanduongtn2013@gmail.com</li>
+    </div>
+    <!------------------cart----------------------------------->
+    <section class="cart">
+        <div class="cartegory-top">
+            <p>Trang chủ</p><span>&#8260;</span><p>Giỏ hàng</p>
+        </div>
+        <div class="cart-container">
+            <div class="cart-container-left">
+                <h1> Giỏ hàng của bạn</h1>
+                
+                <div class="cart-box-product">
+                    <div class="cart-infor-product">
+                        <img src="images/pcworksation/6.jpg" alt="">
+                        <p>PC HIỆU NĂNG GAMING CAO - RTX 4060 Pro Art - 12400F 
+                        (Toàn bộ linh kiện All New - Bảo hành 36 tháng) - 4 Slot cuối cùng - 2 Hà Nội - 2 HCM
+                        </p>
+                    </div>
+                    
+                    <div class="price">
+                    <p>20,990,000 <sup>₫</sup></p>
+                    <div class="quantity-area">
+                        
+                        <button id="decreaseButton" class="qty-btn" type="button">
+                            <svg focusable="false" class="icon icon--minus " viewBox="0 0 10 2" role="presentation">
+                                <path d="M10 0v2H0V0z"></path>
+                            </svg>
+                        </button>
+                        <input type="text" id="quantity" name="quantity" value="1" min="1" class="quantity-input">
+                        <button id="increaseButton" class="qty-btn" type="button">
+                            <svg focusable="false" class="icon icon--plus " viewBox="0 0 10 10" role="presentation">
+                                <path d="M6 4h4v2H6v4H4V6H0V4h4V0h2v4z"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    </div>
+                    <div class="remove-cart">
+                        <button type="button" id="delete-from-cart"> 
+                            Xóa
+                        </button>
+                    </div>
+                    
+                    
+                </div>
+                <div class="note-cart">
+                    <h4>Ghi chú đơn hàng</h4>
+                    <textarea class="form-control" id="note" name="note" rows="5"></textarea>
+                </div>
+            </div>
+            <div class="cart-container-right">
+                <h3>Thông tin đơn hàng</h3>
+                <div class="summary-action">					
+                    <p>Phí vận chuyển sẽ được tính ở trang thanh toán.</p>
+                    <p>Bạn cũng có thể nhập mã giảm giá ở trang thanh toán.</p>
+                    <p>Bạn cũng có thể nhập mã giảm giá ở trang thanh toán.</p>								
+                    	<!-- <div class="summary-alert alert alert-danger ">
+                             Giỏ hàng của bạn hiện chưa đạt mức tối thiểu để thanh toán.
+                            </div> -->
+                </div>
+                <div class="total">
+                    <p>Tổng tiền: 
+                        <span>20,990,000 <sup>₫</sup></span>
+                    </p>
+                </div>
+                
+                <button onclick="window.location.href='http://127.0.0.1:5500/giaodien/pay.html'"type="button" id="thanh-toan" class="  button dark btn-buynow btnred addtocart-modal" name="add"> 
+                    Thanh Toán
+                </button>
+            </div>
+            
+        </div>
+       
+    </section>
+    <!-- --------------------footer------------------------- -->
+    <div class="footer-center">
+        <div class="footer-column">
+            <h4>Về Mangoshop</h4>
+            <p>Trang thương mại chính thức của Mango - xoaii.</p>
+            <p> Luôn tìm kiếm những sản phẩm vì game thủ.</p>
+        </div>
+        <div class="footer-column">
+            <h4> Mạng xã hội</h4>
+            <div class="icon-footer">
+                <a href="https://www.facebook.com/profile.php?id=100006989892987">
+                    <img src="images/faceboookicon.png" alt="">
+                </a>
+                <a href="https://www.youtube.com/channel/UCQojR7eJeJwiFWg1A5QWH2g">
+                    <img src="images/youtubeicon.png" alt="">
+                </a>
+            </div>
+        </div>
+        <div class="footer-column">
+            <h4>Thông tin liên hệ</h4>
+            <p>CẦU MÂY-PHÚ BÌNH-THÁI NGUYÊN</p>
+            <p>SĐT: 0336097717</p>
+        </div>
+        
+    </div>
+    
+    <div class="footer">
+        <p>© 2024 Mangoshop. Bản quyền thuộc về Mango - xoaii.</p>
+    </div>
+    
+</body>
+</html>
