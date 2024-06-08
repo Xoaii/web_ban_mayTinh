@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="../styles.css" rel="stylesheet" />
+    <link href="../reset.css" rel="stylesheet" />
+    <script src="../Scripts/jquery-3.7.1.min.js"></script>
+    <!--<script src="../test.js"></script>-->
+    <script src="../mycode.js"></script>
+    <title>Document</title>
+</head>
+<body>
+    <!-- ... header và các phần khác ... -->
+
+    <section class="productDetail">
+        <div class="container-product">
+            <div class="productdetail-main">
+                <div class="product-gallery">
+                    <div class="wrapbox-gallery">
+                        <div class="product-gallery-slider">
+                            <img id="product-img" src="" alt="">
+                        </div>
+                    </div>
+                </div>
+                <div class="productdetail-content">
+                    <div class="wrapbox-inner">
+                        <div class="wrapbox-detail">
+                            <div class="product-heading" id="product-details">
+                                <h1 id="product-name"></h1>
+                                <span class="soldold">Tình trạng:</span>
+                            </div>
+                        </div>
+                        <div class="wrapbox-dow-left">
+                            <div class="wrapbox-detail">
+                                <div class="product-price" id="price-preview">
+                                    <span class="pro-title">Giá: </span>
+                                    <span id="product-price" class="pro-price"></span>
+                                </div>
+                                <div class="product-actions">
+                                    <div class="quantity-area">
+                                        <div class="quantity-title">Số lượng:</div>
+                                        <button id="decreaseButton" class="qty-btn" type="button">
+                                            <svg focusable="false" class="icon icon--minus" viewBox="0 0 10 2" role="presentation">
+                                                <path d="M10 0v2H0V0z"></path>
+                                            </svg>
+                                        </button>
+                                        <input type="number" value="1" min="1" class="quantity-input" id="product-quantity">
+                                        <button id="increaseButton" class="qty-btn" type="button">
+                                            <svg focusable="false" class="icon icon--plus" viewBox="0 0 10 10" role="presentation">
+                                                <path d="M6 4h4v2H6v4H4V6H0V4h4V0h2v4z"></path>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                    <div class="addcart-area">
+                                        <button type="button" id="add-to-cart" class="add-to-cartProduct button dark btn-addtocart addtocart-modal" name="add">Thêm vào giỏ</button>
+                                        <button type="button" id="buy-now" class="button dark btn-buynow btnred addtocart-modal" name="add">Mua ngay</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="productDetail--box box-detail-description">
+                    <div class="product-description mg-top">
+                        <div class="box-title"><h2>Mô tả sản phẩm</h2></div>
+                        <p id="product-description"></p>
+                        <p> nfihdsfkjhsdkjffffffffffffffffffffffffffffffffffffkjhkjhkhkhaskflhklasdhffffffffffffff
+                        fffffffffffffffffffffffffffffffffffffffffgfddddisohgisfdhgiuodfshgihdfsioughdfuighiodufhgiodfshgiodfhg
+                        gdfgdsfsfsfsfsfsfsfsfsfsfsfsfsfsfsfsfsfsfsfsfsfsfsfsfsfsfsfsfsfsfsfsfsfsfsfsfsfsfsfsfsfsfsfsfsfsfsfsfsf
+                        sfdgggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg</p>
+                    </div>
+                </div>
+                <div class="related-products">
+                    <h3>Sản phẩm liên quan</h3>
+                    <div class="main-cartegory-item"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- --------------------footer------------------------- -->
+    <div class="footer-center">
+        <div class="footer-column">
+            <h4>Về Mangoshop</h4>
+            <p>Trang thương mại chính thức của Mango - xoaii.</p>
+            <p> Luôn tìm kiếm những sản phẩm vì game thủ.</p>
+        </div>
+        <div class="footer-column">
+            <h4> Mạng xã hội</h4>
+            <div class="icon-footer">
+                <a href="https://www.facebook.com/profile.php?id=100006989892987">
+                    <img src="/giaodien/images/faceboookicon.png" alt="">
+                </a>
+                <a href="https://www.youtube.com/channel/UCQojR7eJeJwiFWg1A5QWH2g">
+                    <img src="/giaodien/images/youtubeicon.png" alt="">
+                </a>
+            </div>
+        </div>
+        <div class="footer-column">
+            <h4>Thông tin liên hệ</h4>
+            <p>CẦU MÂY-PHÚ BÌNH-THÁI NGUYÊN</p>
+            <p>SĐT: 0336097717</p>
+        </div>
+
+    </div>
+
+    <div class="footer">
+        <p>© 2024 Mangoshop. Bản quyền thuộc về Mango - xoaii.</p>
+    </div>
+
+</body>
+</html>

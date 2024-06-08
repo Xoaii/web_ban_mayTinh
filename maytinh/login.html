@@ -1,0 +1,60 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="reset.css" rel="stylesheet" />
+    <link href="styles.css" rel="stylesheet" />
+    <script src="Scripts/jquery-3.7.1.min.js"></script>
+    <script src="mycode.js"></script>
+    <title>Đăng nhập và Đăng ký</title>
+    
+</head>
+<body>
+    <div class="form-container">
+        <form id="login-form" class="active">
+            <h2>Đăng nhập</h2>
+            <input id="taiKhoan" type="text" name="tai_khoan" placeholder="Tên đăng nhập" required>
+            <input id="matKhau" type="password" name="mat_khau" placeholder="Mật khẩu" required>
+            <button id="submit-login" type="submit">Đăng nhập</button>
+            <p>Bạn chưa có tài khoản? <a href="#" id="signup-link">Đăng ký ngay</a></p>
+        </form>
+        <form id="signup-form">
+            <h2>Đăng ký</h2>
+            <input type="text" name="tai_khoan" placeholder="Tài khoản" required>
+            <input type="password" name="mat_khau" placeholder="Mật khẩu" required>
+            <input type="password" name="mat_khau_xac_nhan" placeholder="Nhập lại mật khẩu" required>
+            <input type="date" name="ngay_sinh" placeholder="Ngày sinh" required>
+            <input type="text" name="ho_ten" placeholder="Họ tên" required>
+            <input type="text" name="gioi_tinh" placeholder="Giới tính" required>
+            <input type="text" name="dia_chi" placeholder="Địa chỉ" required>
+            <input type="email" name="email" placeholder="Email" required>
+            <input type="text" name="sdt" placeholder="Số điện thoại" required>
+            <button type="submit">Đăng ký</button>
+            <p>Đã có tài khoản? <a href="#" id="login-link">Đăng nhập</a></p>
+        </form>
+    </div>
+    <script>
+        $(document).ready(function () {
+            const loginForm = $('#login-form');
+            const signupForm = $('#signup-form');
+            const loginLink = $('#login-link');
+            const signupLink = $('#signup-link');
+
+            loginLink.click(function (e) {
+                e.preventDefault();
+                loginForm.addClass('active');
+                signupForm.removeClass('active');
+            });
+
+            signupLink.click(function (e) {
+                e.preventDefault();
+                loginForm.removeClass('active');
+                signupForm.addClass('active');
+            });
+
+            
+        });
+    </script>
+</body>
+</html>
