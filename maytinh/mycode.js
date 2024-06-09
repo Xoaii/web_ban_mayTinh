@@ -298,7 +298,7 @@ $(document).ready(function () {
     // Lấy productId từ URL
     var urlParams = new URLSearchParams(window.location.search);
     var productId = urlParams.get('product_id');
-    var giaban = 0;
+   
 
     // Gọi hàm lấy chi tiết sản phẩm nếu productId hợp lệ
     if (productId !== null && !isNaN(productId)) {
@@ -324,11 +324,11 @@ $(document).ready(function () {
 
                         // Cập nhật thông tin sản phẩm lên trang HTML
                         $('#product-details').data('product-id', product.id);
-                        $('#product-details').data('product-price', product.gia);
+                        $('#product-details').data('product-price', product.gia*1.1);
                         $('#product-name').text(product.ten);
                         $('#product-img').attr('src', product.image);
                         $('#product-description').text(product.mo_ta);
-                        giaban = $('#product-price').text(formatPrice(product.gia * 1.1));
+                        $('#product-price').text(formatPrice(product.gia * 1.1));
                     } else {
                         console.error("Dữ liệu JSON trống hoặc không hợp lệ.");
                     }
@@ -352,21 +352,23 @@ $(document).ready(function () {
     $('#add-to-cart').click(function () {
         var productId = $('#product-details').data('product-id');
         var productName = $('#product-name').text();
-        var productPrice = giaban;
+        var productPrice = $('#product-details').data('product-price');
         var productQuantity = $('#product-quantity').val();
 
         // Thực hiện thêm sản phẩm vào giỏ hàng ở đây
         console.log("Thêm sản phẩm vào giỏ hàng:", productId, productName, productPrice, productQuantity);
+        requireLogin('add_to_cart', productId, productPrice, productQuantity);
     });
 
     $('#buy-now').click(function () {
         var productId = $('#product-details').data('product-id');
         var productName = $('#product-name').text();
-        var productPrice = giaban;
+        var productPrice = $('#product-details').data('product-price');
         var productQuantity = $('#product-quantity').val();
 
         // Thực hiện mua ngay sản phẩm ở đây
         console.log("Mua ngay sản phẩm:", productId, productName, productPrice, productQuantity);
+        requireLogin('buy_now', productId, productPrice, productQuantity);
     });
 
     function updateQuantityDisplay(quantity) {
@@ -389,14 +391,15 @@ $(document).ready(function () {
         }
     });
 
-   
     // Xử lý đăng nhập
     function dangNhap(taiKhoan, matKhau, callback) {
+        console.log('Đang thực hiện đăng nhập với tài khoản:', taiKhoan);
         $.post(api, {
             action: 'login',
             tai_khoan: taiKhoan,
             mat_khau: matKhau
         }, function (response) {
+            console.log('Phản hồi từ server sau khi đăng nhập:', response);
             var responseData = JSON.parse(response);
             callback(responseData);
         });
@@ -406,47 +409,45 @@ $(document).ready(function () {
         var taiKhoan = $('#taiKhoan').val();
         var matKhau = $('#matKhau').val();
 
+        console.log('Nút đăng nhập được bấm. Tài khoản:', taiKhoan, 'Mật khẩu:', matKhau);
+
         dangNhap(taiKhoan, matKhau, function (response) {
             if (response.ok === 1) {
                 console.log('Đăng nhập thành công:', response);
-                // Thực hiện các hành động sau khi đăng nhập thành công
+                // Lưu trạng thái đăng nhập vào sessionStorage hoặc localStorage nếu cần
+                sessionStorage.setItem('isLoggedIn', true);
+                sessionStorage.setItem('accountId', response.account_id); // Assuming the response contains account_id
+
+                // Kiểm tra returnUrl từ sessionStorage và chuyển hướng nếu có
+                var returnUrl = sessionStorage.getItem('returnUrl');
+                if (returnUrl) {
+                    console.log('Chuyển hướng đến URL:', returnUrl);
+                    window.location.href = returnUrl;
+                    sessionStorage.removeItem('returnUrl');
+                } else {
+                    // Chuyển hướng đến trang chính hoặc trang bạn muốn sau khi đăng nhập thành công
+                    console.log('Chuyển hướng đến trang chính sau khi đăng nhập thành công.');
+                    window.location.href = '/index.html';
+                }
             } else {
                 console.log('Đăng nhập thất bại:', response.msg);
-                // Hiển thị thông báo lỗi cho người dùng
+                alert('Đăng nhập thất bại: ' + response.msg);
             }
         });
     });
-    //function kiemTraDangNhap(callback) {
-    //    $.post(api, {
-    //        action: 'check_login'
-    //    }, function (response) {
-    //        var responseData = JSON.parse(response);
-    //        callback(responseData);
-    //    });
-    //}
 
-    //    kiemTraDangNhap(function (response) {
-    //        if (response.ok === 1) {
-    //            console.log('Người dùng đã đăng nhập:', response);
-    //            // Thực hiện các hành động sau khi kiểm tra đăng nhập
-    //        } else {
-    //            console.log('Người dùng chưa đăng nhập:', response.msg);
-    //            // Hiển thị thông báo lỗi cho người dùng
-                
-    //        }
-    //    });
-    
     // Function to handle actions that require login
-    function requireLogin(action, productId, giaBan) {
+    function requireLogin(action, productId, giaBan, quantity) {
+        console.log('Yêu cầu đăng nhập cho hành động:', action, 'Với sản phẩm ID:', productId, 'Giá bán:', giaBan, 'Số lượng:', quantity);
         kiemTraDangNhap(function (response) {
             if (response.ok === 1) {
                 console.log('Người dùng đã đăng nhập:', response);
                 if (action === 'add_to_cart') {
                     // Handle adding to cart
-                    addToCart(productId, giaBan);
+                    addToCart(response.account_id, productId, giaBan, quantity);
                 } else if (action === 'buy_now') {
                     // Handle buying now
-                    buyNow(productId, giaBan);
+                    buyNow(response.account_id, productId, giaBan, quantity);
                 }
             } else {
                 console.log('Người dùng chưa đăng nhập:', response.msg);
@@ -455,6 +456,7 @@ $(document).ready(function () {
                     // Lưu URL hiện tại để sau khi đăng nhập có thể quay lại
                     sessionStorage.setItem('returnUrl', window.location.href);
                     // Chuyển hướng đến trang đăng nhập
+                    console.log('Chuyển hướng đến trang đăng nhập.');
                     window.location.href = '/login.html';
                 }
             }
@@ -463,53 +465,44 @@ $(document).ready(function () {
 
     // Function to check login status
     function kiemTraDangNhap(callback) {
+        console.log('Đang kiểm tra trạng thái đăng nhập...');
         $.post(api, {
             action: 'check_login'
         }, function (response) {
+            console.log('Phản hồi từ server khi kiểm tra đăng nhập:', response);
             var responseData = JSON.parse(response);
             callback(responseData);
         });
     }
-    
-    // Example event handlers
-    $('#add-to-cart').click(function () {
-        var productId = $(this).data('product-id');
-        var quantity = $('#product-quantity').val();
-        var giaBan = $(this).data('gia-ban');
-        requireLogin('add_to_cart', productId, giaBan);
-    });
-
-    $('#buy-now').click(function () {
-        var productId = $(this).data('product-id');
-        var gia_Ban = giaban;
-        requireLogin('buy-now', productId, gia_Ban);
-    });
 
     // Function to handle adding to cart
-    function addToCart(productId, giaBan) {
+    function addToCart(accountId, productId, giaBan, productQuantity) {
+        console.log('Đang thêm sản phẩm vào giỏ hàng. Account ID:', accountId, 'Product ID:', productId, 'Giá bán:', giaBan, 'Số lượng:', productQuantity);
         $.post(api, {
             action: 'add_to_cart',
+            accounts_id: accountId, // Truyền ID tài khoản
             product_id: productId,
-            quantity: 1, // Example quantity
-            gia_ban: giaban
+            quantity: productQuantity, // Số lượng sản phẩm
+            gia_ban: giaBan
         }, function (response) {
-            console.log("Add to cart response:", response);
-            if (response.ok === 1) {
+            var responseData = JSON.parse(response);
+            console.log("Phản hồi từ server khi thêm vào giỏ hàng:", responseData);
+            if (responseData.ok === 1) {
                 alert('Thêm vào giỏ hàng thành công!');
             } else {
-                alert('Thêm vào giỏ hàng thất bại: ' + response.msg);
+                alert('Thêm vào giỏ hàng thất bại: ' + responseData.msg);
             }
-        }, 'json').fail(function () {
-            console.error("Failed to add to cart.");
+        }).fail(function () {
+            console.error("Không thể thêm vào giỏ hàng.");
         });
     }
 
     // Function to handle buying now
-    function buyNow(productId, giaBan) {
-        addToCart(productId, giaBan); // Add to cart first
+    function buyNow(accountId, productId, giaBan, productQuantity) {
+        console.log('Đang thực hiện mua ngay. Account ID:', accountId, 'Product ID:', productId, 'Giá bán:', giaBan, 'Số lượng:', productQuantity);
+        addToCart(accountId, productId, giaBan, productQuantity); // Add to cart first
         window.location.href = '/cart.html'; // Redirect to cart page
     }
-   
 
     
 });

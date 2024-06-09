@@ -88,7 +88,7 @@
     // Lấy productId từ URL
     var urlParams = new URLSearchParams(window.location.search);
     var productId = urlParams.get('product_id');
-    var giaban = 0;
+    
 
     // Gọi hàm lấy chi tiết sản phẩm nếu productId hợp lệ
     if (productId !== null && !isNaN(productId)) {
@@ -114,11 +114,11 @@
 
                         // Cập nhật thông tin sản phẩm lên trang HTML
                         $('#product-details').data('product-id', product.id);
-                        $('#product-details').data('product-price', product.gia);
+                        /*$('#product-details').data('product-price', product.gia);*/
                         $('#product-name').text(product.ten);
                         $('#product-img').attr('src', product.image);
                         $('#product-description').text(product.mo_ta);
-                        giaban= $('#product-price').text(formatPrice(product.gia*1.1));
+                        $('#product-price').text(formatPrice(product.gia*1.1));
                     } else {
                         console.error("Dữ liệu JSON trống hoặc không hợp lệ.");
                     }
