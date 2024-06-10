@@ -157,6 +157,24 @@ namespace maytinh.images
             string json = (string)db.Scalar(cm);
             Response.Write(json);
         }
+        void xuly_giohang(string action)
+        {
+            SqlServer db = new SqlServer();
+            SqlCommand cm = db.GetCmd("SP_gioHang", action);
+            switch (action)
+            {
+                case "list_gioHang":
+                    cm.Parameters.Add("@id", SqlDbType.Int).Value = Convert.ToInt32(Request.Form["id"]);
+                    break;
+
+            }
+
+
+
+
+            string json = (string)db.Scalar(cm);
+            Response.Write(json);
+        }
 
 
         protected void Page_Load(object sender, EventArgs e)
@@ -189,6 +207,11 @@ namespace maytinh.images
 
                     xuly_dangky(action);
                     break;
+                case "list_gioHang":
+
+                    xuly_giohang(action);
+                    break;
+
             }
         }
 

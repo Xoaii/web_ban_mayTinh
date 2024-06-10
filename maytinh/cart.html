@@ -5,7 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="reset.css" rel="stylesheet" />
     <link href="styles.css" rel="stylesheet" />
-    <script src="/giaodien/mycode.js"></script>
+    <script src="Scripts/jquery-3.7.1.min.js"></script>
+    <script src="mycode.js"></script>
     <title>Document</title>
 </head>
 <body>
@@ -74,41 +75,10 @@
         <div class="cart-container">
             <div class="cart-container-left">
                 <h1> Giỏ hàng của bạn</h1>
-
-                <!--<div class="cart-box-product">
-        <div class="cart-infor-product">
-            <img src="images/pcworksation/6.jpg" alt="">
-            <p>PC HIỆU NĂNG GAMING CAO - RTX 4060 Pro Art - 12400F
-            (Toàn bộ linh kiện All New - Bảo hành 36 tháng) - 4 Slot cuối cùng - 2 Hà Nội - 2 HCM
-            </p>
-        </div>
-
-        <div class="price">
-        <p>20,990,000 <sup>₫</sup></p>
-        <div class="quantity-area">
-
-            <button id="decreaseButton" class="qty-btn" type="button">
-                <svg focusable="false" class="icon icon--minus " viewBox="0 0 10 2" role="presentation">
-                    <path d="M10 0v2H0V0z"></path>
-                </svg>
-            </button>
-            <input type="text" id="quantity" name="quantity" value="1" min="1" class="quantity-input">
-            <button id="increaseButton" class="qty-btn" type="button">
-                <svg focusable="false" class="icon icon--plus " viewBox="0 0 10 10" role="presentation">
-                    <path d="M6 4h4v2H6v4H4V6H0V4h4V0h2v4z"></path>
-                </svg>
-            </button>
-        </div>
-        </div>
-        <div class="remove-cart">
-            <button type="button" id="delete-from-cart">
-                Xóa
-            </button>
-        </div>
-
-
-    </div>-->
-                
+                <div id="cart-items">
+                    <!-- Sản phẩm trong giỏ hàng sẽ được đổ vào đây -->
+                    <h2 id="nf-cart">Giỏ hàng của bạn không có sản phẩm nào</h2>
+                </div>
                 <div class="note-cart">
                     <h4>Ghi chú đơn hàng</h4>
                     <textarea class="form-control" id="note" name="note" rows="5"></textarea>
@@ -116,27 +86,21 @@
             </div>
             <div class="cart-container-right">
                 <h3>Thông tin đơn hàng</h3>
-                <div class="summary-action">					
+                <div class="summary-action">
                     <p>Phí vận chuyển sẽ được tính ở trang thanh toán.</p>
                     <p>Bạn cũng có thể nhập mã giảm giá ở trang thanh toán.</p>
-                    <p>Bạn cũng có thể nhập mã giảm giá ở trang thanh toán.</p>								
-                    	<!-- <div class="summary-alert alert alert-danger ">
-                             Giỏ hàng của bạn hiện chưa đạt mức tối thiểu để thanh toán.
-                            </div> -->
                 </div>
                 <div class="total">
-                    <p>Tổng tiền: 
-                        <span>20,990,000 <sup>₫</sup></span>
+                    <p>
+                        Tổng tiền:
+                        <span id="total-price">0 <sup>₫</sup></span>
                     </p>
                 </div>
-                
-                <button onclick="window.location.href='http://127.0.0.1:5500/giaodien/pay.html'"type="button" id="thanh-toan" class="  button dark btn-buynow btnred addtocart-modal" name="add"> 
+                <button onclick="window.location.href='pay.html'" type="button" id="thanh-toan" class="button dark btn-buynow btnred addtocart-modal" name="add">
                     Thanh Toán
                 </button>
             </div>
-            
         </div>
-       
     </section>
     <!-- --------------------footer------------------------- -->
     <div class="footer-center">
