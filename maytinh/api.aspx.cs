@@ -138,6 +138,25 @@ namespace maytinh.images
             string json = (string)db.Scalar(cm);
             Response.Write(json);
         }
+        void xuly_dangky(string action)
+        {
+            SqlServer db = new SqlServer();
+            SqlCommand cm = db.GetCmd("SP_Account", action);
+           cm.Parameters.Add("@tai_khoan", SqlDbType.NVarChar,50).Value = Request["tai_khoan"];
+            cm.Parameters.Add("@mat_khau", SqlDbType.NVarChar, 50).Value = Request["mat_khau"];
+            cm.Parameters.Add("@ngay_sinh", SqlDbType.Date).Value = Request["ngay_sinh"];
+            cm.Parameters.Add("@ho_ten", SqlDbType.NVarChar, 50).Value = Request["ho_ten"];
+            cm.Parameters.Add("@gioi_tinh", SqlDbType.NVarChar, 10).Value = Request["gioi_tinh"];
+            cm.Parameters.Add("@dia_chi", SqlDbType.NVarChar, 100).Value = Request["dia_chi"];
+            cm.Parameters.Add("@email", SqlDbType.NVarChar, 50).Value = Request["email"];
+            cm.Parameters.Add("@sdt", SqlDbType.NVarChar, 10).Value = Request["sdt"];
+
+
+
+
+            string json = (string)db.Scalar(cm);
+            Response.Write(json);
+        }
 
 
         protected void Page_Load(object sender, EventArgs e)
@@ -163,9 +182,12 @@ namespace maytinh.images
                     CheckLoginStatus();
                     break;
                 case "get_user_info":
-              
 
                     xuly_userInfo(action);
+                    break;
+                case "register":
+
+                    xuly_dangky(action);
                     break;
             }
         }

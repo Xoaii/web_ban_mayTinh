@@ -430,7 +430,7 @@ $(document).ready(function () {
                     // Lưu trạng thái đăng nhập vào sessionStorage hoặc localStorage nếu cần
                     sessionStorage.setItem('isLoggedIn', true);
                     sessionStorage.setItem('accountId', response.account_id); // Assuming the response contains account_id
-
+                    
                     // Kiểm tra returnUrl từ sessionStorage và chuyển hướng nếu có
                     var returnUrl = sessionStorage.getItem('returnUrl');
                     if (returnUrl) {
@@ -448,6 +448,160 @@ $(document).ready(function () {
                 }
             });
         });
+    // Function to get user info
+    function getUserInfo(accountId, callback) {
+        $.post(api, {
+            action: 'get_user_info',
+            account_id: accountId
+        }, function (response) {
+            console.log('Phản hồi từ server khi lấy thông tin người dùng:', response);
+            try {
+                var responseData = JSON.parse(response);
+                callback(responseData);
+            } catch (error) {
+                console.error('Lỗi khi phân tích dữ liệu JSON:', error);
+                callback(null); // Trả về null nếu có lỗi
+            }
+        });
+    }
+
+    //function dangNhap(taiKhoan, matKhau, callback) {
+    //    console.log('Đang thực hiện đăng nhập với tài khoản:', taiKhoan);
+    //    $.post(api, {
+    //        action: 'login',
+    //        tai_khoan: taiKhoan,
+    //        mat_khau: matKhau
+    //    }, function (response) {
+    //        console.log('Phản hồi từ server sau khi đăng nhập:', response);
+    //        var responseData = JSON.parse(response);
+    //        callback(responseData);
+    //    });
+    //}
+    function dangNhap(taiKhoan, matKhau, callback) {
+        console.log('Đang thực hiện đăng nhập với tài khoản:', taiKhoan);
+        $.post(api, {
+            action: 'login',
+            tai_khoan: taiKhoan,
+            mat_khau: matKhau
+        }, function (response) {
+            console.log('Phản hồi từ server sau khi đăng nhập:', response);
+            var responseData = JSON.parse(response);
+            if (responseData.ok === 1) {
+                // Lưu thông tin đăng nhập mới vào sessionStorage
+                sessionStorage.setItem('isLoggedIn', true);
+                /* sessionStorage.setItem('accountId', responseData.account_id);*/
+                sessionStorage.setItem('taiKhoan', responseData.tai_khoan);
+                // Người dùng đã đăng nhập, lấy thông tin người dùng
+               
+            }
+            callback(responseData);
+        });
+    }
+
+    function requireLogin(action, productId, giaBan, quantity) {
+        console.log('Yêu cầu đăng nhập cho hành động:', action, 'Với sản phẩm ID:', productId, 'Giá bán:', giaBan, 'Số lượng:', quantity);
+        kiemTraDangNhap(function (response) {
+            if (response.ok === 1) {
+                console.log('Người dùng đã đăng nhập:', response);
+                if (action === 'add_to_cart') {
+                    // Handle adding to cart
+                    addToCart(response.account_id, productId, giaBan, quantity);
+                } else if (action === 'buy_now') {
+                    // Handle buying now
+                    buyNow(response.account_id, productId, giaBan, quantity);
+                }
+            } else {
+                console.log('Người dùng chưa đăng nhập:', response.msg);
+                var confirmAction = confirm('Bạn cần đăng nhập để thực hiện hành động này. Bấm OK để đăng nhập.');
+                if (confirmAction) {
+                    // Lưu URL hiện tại để sau khi đăng nhập có thể quay lại
+                    sessionStorage.setItem('returnUrl', window.location.href);
+                    // Chuyển hướng đến trang đăng nhập
+                    console.log('Chuyển hướng đến trang đăng nhập.');
+                    window.location.href = '/login.html';
+                }
+            }
+        });
+    }
+
+    // Function to check login status
+    function kiemTraDangNhap(callback) {
+        console.log('Đang kiểm tra trạng thái đăng nhập...');
+
+        // Kiểm tra xem có dữ liệu đăng nhập trong sessionStorage không
+        var isLoggedIn = sessionStorage.getItem('isLoggedIn');
+        var accountId = sessionStorage.getItem('accountId');
+
+        if (!isLoggedIn || !accountId) {
+            // Nếu không có dữ liệu đăng nhập trong sessionStorage, trả về phản hồi không thành công
+            console.log('Không có thông tin đăng nhập trong sessionStorage.');
+            callback({ ok: 0, msg: "Người dùng chưa đăng nhập" });
+            return;
+        }
+
+        // Nếu có dữ liệu đăng nhập, gửi yêu cầu kiểm tra đến server
+        $.post(api, {
+            action: 'check_login'
+        }, function (response) {
+            console.log('Phản hồi từ server khi kiểm tra đăng nhập:', response);
+            var responseData = JSON.parse(response);
+
+            // Kiểm tra phản hồi từ server
+            if (responseData.ok === 1) {
+                // Người dùng đã đăng nhập
+                // Người dùng đã đăng nhập, lấy thông tin người dùng
+                getUserInfo(responseData.account_id, function (userData) {
+                    // Cập nhật thông tin người dùng lên trang HTML
+                    $('#username').text(userData.tai_khoan);
+                    $('#ho_ten').text(userData.ho_ten);
+                    $('#ngay_sinh').text(userData.ngay_sinh);
+                    $('#gioi_tinh').text(userData.gioi_tinh);
+                    $('#dia_chi').text(userData.dia_chi);
+                    $('#email').text(userData.email);
+                    $('#sdt').text(userData.sdt);
+                });
+                callback(responseData);
+
+            } else {
+                // Người dùng chưa đăng nhập
+                callback({ ok: 0, msg: "Người dùng chưa đăng nhập" });
+            }
+        }).fail(function () {
+            // Xử lý lỗi nếu có
+            console.log('Đã xảy ra lỗi khi gọi API kiểm tra đăng nhập.');
+            callback({ ok: 0, msg: "Lỗi khi kiểm tra đăng nhập" });
+        });
+    }
+
+
+
+    function addToCart(accountId, productId, giaBan, productQuantity) {
+        console.log('Đang thêm sản phẩm vào giỏ hàng. Account ID:', accountId, 'Product ID:', productId, 'Giá bán:', giaBan, 'Số lượng:', productQuantity);
+        $.post(api, {
+            action: 'add_to_cart',
+            accounts_id: accountId, // Truyền ID tài khoản
+            product_id: productId,
+            quantity: productQuantity, // Số lượng sản phẩm
+            gia_ban: giaBan
+        }, function (response) {
+            var responseData = JSON.parse(response);
+            console.log("Phản hồi từ server khi thêm vào giỏ hàng:", responseData);
+            if (responseData.ok === 1) {
+                alert('Thêm vào giỏ hàng thành công!');
+            } else {
+                alert('Thêm vào giỏ hàng thất bại: ' + responseData.msg);
+            }
+        }).fail(function () {
+            console.error("Không thể thêm vào giỏ hàng.");
+        });
+    }
+
+    function buyNow(accountId, productId, giaBan, productQuantity) {
+        console.log('Đang thực hiện mua ngay. Account ID:', accountId, 'Product ID:', productId, 'Giá bán:', giaBan, 'Số lượng:', productQuantity);
+        addToCart(accountId, productId, giaBan, productQuantity); // Add to cart first
+        window.location.href = '/cart.html'; // Redirect to cart page
+    }
+
     $('#logout').click(function (event) {
 
         console.log('Nút đăng xuất được bấm.');
@@ -463,139 +617,87 @@ $(document).ready(function () {
         window.location.href = '/index.html';
     });
 
+    // đăng ký 
+    $('#signup-form').submit(function (event) {
+        event.preventDefault();
+
+        var taiKhoan = $('#tai_khoandk').val();
+        var matKhau = $('#mat_khaudk').val();
+        var matKhauXacNhan = $('#mat_khau_xac_nhan').val();
+        var ngaySinh = $('#ngay_sinh').val();
+        var hoTen = $('#ho_ten').val();
+        var email = $('#email').val();
+        var gioiTinh = $('#gioi_tinh option:selected').val(); // Sử dụng cú pháp này để lấy giá trị của select box
+        var diaChi = $('#dia_chi').val();
+        var sdt = $('#sdt').val();
+        // Kiểm tra ngày sinh có đủ 18 tuổi không
+        var birthDate = new Date(ngaySinh);
+        var today = new Date();
+        var age = today.getFullYear() - birthDate.getFullYear();
+        var monthDiff = today.getMonth() - birthDate.getMonth();
+        if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+            age--;
+        }
+
+        if (age < 18) {
+            alert('Bạn phải đủ 18 tuổi để đăng ký.');
+            return;
+        }
+        // Kiểm tra số điện thoại chỉ chứa các ký tự từ 0 đến 9
+        var phoneNumberRegex = /^[0-9]+$/;
+        if (!phoneNumberRegex.test(sdt)) {
+            alert('Số điện thoại chỉ được nhập từ 0 đến 9.');
+            return;
+        }
+        if (matKhau.length < 6 ) {
+            alert("Mật khẩu phải có ít nhất 6 ký tự");
+            return;
+        }
+        else if (matKhau !== matKhauXacNhan) {
+            alert("Mật khẩu và xác nhận mật khẩu không khớp");
+            return;
+        }
+
+        // Kiểm tra email có chứa @gmail.com không
+        if (!email.toLowerCase().includes('@gmail.com')) {
+            alert("Email phải là địa chỉ gmail.com");
+            return;
+        }
+
+        // Kiểm tra giới tính được chọn
+        if (gioiTinh !== 'Nam' && gioiTinh !== 'Nữ') {
+            alert("Vui lòng chọn giới tính");
+            return;
+        }
+
+
+        // Gọi action 'register' để kiểm tra và đăng ký tài khoản
+        $.post(api, {
+            action: 'register',
+            tai_khoan: taiKhoan,
+            mat_khau: matKhau,
+            ngay_sinh: ngaySinh,
+            ho_ten: hoTen,
+            gioi_tinh: gioiTinh,
+            dia_chi: diaChi,
+            email: email,
+            sdt: sdt
+        }, function (response) {
+            console.log(response); // Log phản hồi từ server (có thể là JSON)
+
+            // Xử lý phản hồi từ server ở đây
+            var responseData = JSON.parse(response);
+            if (responseData.ok === 1) {
+                // Đăng ký thành công
+                alert(responseData.msg);
+                // Redirect hoặc thực hiện hành động khác sau khi đăng ký thành công
+                window.location.href = '/login.html'; // Chuyển hướng đến trang đăng nhập
+            } else {
+                // Đăng ký không thành công
+                alert(responseData.msg);
+            }
+        });
+    });
       
 });
 // Function to check login status
-function getUserInfo(accountId, callback) {
-    $.post(api, {
-        action: 'get_user_info',
-        account_id: accountId
-    }, function (response) {
-        console.log('Phản hồi từ server khi lấy thông tin người dùng:', response);
-        var responseData = JSON.parse(response);
-        callback(responseData);
-    });
-}
-
-//function dangNhap(taiKhoan, matKhau, callback) {
-//    console.log('Đang thực hiện đăng nhập với tài khoản:', taiKhoan);
-//    $.post(api, {
-//        action: 'login',
-//        tai_khoan: taiKhoan,
-//        mat_khau: matKhau
-//    }, function (response) {
-//        console.log('Phản hồi từ server sau khi đăng nhập:', response);
-//        var responseData = JSON.parse(response);
-//        callback(responseData);
-//    });
-//}
-function dangNhap(taiKhoan, matKhau, callback) {
-    console.log('Đang thực hiện đăng nhập với tài khoản:', taiKhoan);
-    $.post(api, {
-        action: 'login',
-        tai_khoan: taiKhoan,
-        mat_khau: matKhau
-    }, function (response) {
-        console.log('Phản hồi từ server sau khi đăng nhập:', response);
-        var responseData = JSON.parse(response);
-        if (responseData.ok === 1) {
-            // Lưu thông tin đăng nhập mới vào sessionStorage
-            sessionStorage.setItem('isLoggedIn', true);
-           /* sessionStorage.setItem('accountId', responseData.account_id);*/
-            sessionStorage.setItem('taiKhoan', responseData.tai_khoan);
-        }
-        callback(responseData);
-    });
-}
-
-function requireLogin(action, productId, giaBan, quantity) {
-    console.log('Yêu cầu đăng nhập cho hành động:', action, 'Với sản phẩm ID:', productId, 'Giá bán:', giaBan, 'Số lượng:', quantity);
-    kiemTraDangNhap(function (response) {
-        if (response.ok === 1) {
-            console.log('Người dùng đã đăng nhập:', response);
-            if (action === 'add_to_cart') {
-                // Handle adding to cart
-                addToCart(response.account_id, productId, giaBan, quantity);
-            } else if (action === 'buy_now') {
-                // Handle buying now
-                buyNow(response.account_id, productId, giaBan, quantity);
-            }
-        } else {
-            console.log('Người dùng chưa đăng nhập:', response.msg);
-            var confirmAction = confirm('Bạn cần đăng nhập để thực hiện hành động này. Bấm OK để đăng nhập.');
-            if (confirmAction) {
-                // Lưu URL hiện tại để sau khi đăng nhập có thể quay lại
-                sessionStorage.setItem('returnUrl', window.location.href);
-                // Chuyển hướng đến trang đăng nhập
-                console.log('Chuyển hướng đến trang đăng nhập.');
-                window.location.href = '/login.html';
-            }
-        }
-    });
-}
-
-// Function to check login status
-function kiemTraDangNhap(callback) {
-    console.log('Đang kiểm tra trạng thái đăng nhập...');
-
-    // Kiểm tra xem có dữ liệu đăng nhập trong sessionStorage không
-    var isLoggedIn = sessionStorage.getItem('isLoggedIn');
-    var accountId = sessionStorage.getItem('accountId');
-
-    if (!isLoggedIn || !accountId) {
-        // Nếu không có dữ liệu đăng nhập trong sessionStorage, trả về phản hồi không thành công
-        console.log('Không có thông tin đăng nhập trong sessionStorage.');
-        callback({ ok: 0, msg: "Người dùng chưa đăng nhập" });
-        return;
-    }
-
-    // Nếu có dữ liệu đăng nhập, gửi yêu cầu kiểm tra đến server
-    $.post(api, {
-        action: 'check_login'
-    }, function (response) {
-        console.log('Phản hồi từ server khi kiểm tra đăng nhập:', response);
-        var responseData = JSON.parse(response);
-
-        // Kiểm tra phản hồi từ server
-        if (responseData.ok === 1) {
-            // Người dùng đã đăng nhập
-            callback(responseData);
-        } else {
-            // Người dùng chưa đăng nhập
-            callback({ ok: 0, msg: "Người dùng chưa đăng nhập" });
-        }
-    }).fail(function () {
-        // Xử lý lỗi nếu có
-        console.log('Đã xảy ra lỗi khi gọi API kiểm tra đăng nhập.');
-        callback({ ok: 0, msg: "Lỗi khi kiểm tra đăng nhập" });
-    });
-}
-
-
-
-function addToCart(accountId, productId, giaBan, productQuantity) {
-    console.log('Đang thêm sản phẩm vào giỏ hàng. Account ID:', accountId, 'Product ID:', productId, 'Giá bán:', giaBan, 'Số lượng:', productQuantity);
-    $.post(api, {
-        action: 'add_to_cart',
-        accounts_id: accountId, // Truyền ID tài khoản
-        product_id: productId,
-        quantity: productQuantity, // Số lượng sản phẩm
-        gia_ban: giaBan
-    }, function (response) {
-        var responseData = JSON.parse(response);
-        console.log("Phản hồi từ server khi thêm vào giỏ hàng:", responseData);
-        if (responseData.ok === 1) {
-            alert('Thêm vào giỏ hàng thành công!');
-        } else {
-            alert('Thêm vào giỏ hàng thất bại: ' + responseData.msg);
-        }
-    }).fail(function () {
-        console.error("Không thể thêm vào giỏ hàng.");
-    });
-}
-
-function buyNow(accountId, productId, giaBan, productQuantity) {
-    console.log('Đang thực hiện mua ngay. Account ID:', accountId, 'Product ID:', productId, 'Giá bán:', giaBan, 'Số lượng:', productQuantity);
-    addToCart(accountId, productId, giaBan, productQuantity); // Add to cart first
-    window.location.href = '/cart.html'; // Redirect to cart page
-}

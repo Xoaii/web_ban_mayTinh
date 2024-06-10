@@ -21,15 +21,19 @@
         </form>
         <form id="signup-form">
             <h2>Đăng ký</h2>
-            <input type="text" name="tai_khoan" placeholder="Tài khoản" required>
-            <input type="password" name="mat_khau" placeholder="Mật khẩu" required>
-            <input type="password" name="mat_khau_xac_nhan" placeholder="Nhập lại mật khẩu" required>
-            <input type="date" name="ngay_sinh" placeholder="Ngày sinh" required>
-            <input type="text" name="ho_ten" placeholder="Họ tên" required>
-            <input type="text" name="gioi_tinh" placeholder="Giới tính" required>
-            <input type="text" name="dia_chi" placeholder="Địa chỉ" required>
-            <input type="email" name="email" placeholder="Email" required>
-            <input type="text" name="sdt" placeholder="Số điện thoại" required>
+            <input type="text" id="tai_khoandk" name="tai_khoan" placeholder="Tài khoản" required>
+            <input type="password" id="mat_khaudk" name="mat_khau" placeholder="Mật khẩu" required>
+            <input type="password" id="mat_khau_xac_nhan" name="mat_khau_xac_nhan" placeholder="Nhập lại mật khẩu" required>
+            <input type="date" id="ngay_sinh" name="ngay_sinh" placeholder="Ngày sinh" required>
+            <input type="text" id="ho_ten" name="ho_ten" placeholder="Họ tên" required>
+            <select id="gioi_tinh" name="gioi_tinh" required>
+                <option value="" disabled selected>Chọn giới tính</option>
+                <option value="Nam">Nam</option>
+                <option value="Nữ">Nữ</option>
+            </select>
+            <input type="text" id="dia_chi" name="dia_chi" placeholder="Địa chỉ" required>
+            <input type="email" id="email" name="email" placeholder="Email" required>
+            <input type="text" id="sdt" name="sdt" placeholder="Số điện thoại" required>
             <button type="submit">Đăng ký</button>
             <p>Đã có tài khoản? <a href="#" id="login-link">Đăng nhập</a></p>
         </form>
