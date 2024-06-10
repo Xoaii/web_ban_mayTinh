@@ -121,6 +121,23 @@ namespace maytinh.images
                 Response.Write("{\"ok\": 0, \"msg\": \"User is not logged in\"}");
             }
         }
+        void xuly_userInfo(string action)
+        {
+            SqlServer db = new SqlServer();
+            SqlCommand cm = db.GetCmd("SP_Account", action);
+            switch(action)
+            {
+                case "get_user_info":
+             
+                    cm.Parameters.Add("@account_id", SqlDbType.Int).Value = Convert.ToInt32(Request.Form["account_id"]);
+                    break;
+
+            }    
+           
+
+            string json = (string)db.Scalar(cm);
+            Response.Write(json);
+        }
 
 
         protected void Page_Load(object sender, EventArgs e)
@@ -144,6 +161,11 @@ namespace maytinh.images
                     break;
                 case "check_login":
                     CheckLoginStatus();
+                    break;
+                case "get_user_info":
+              
+
+                    xuly_userInfo(action);
                     break;
             }
         }

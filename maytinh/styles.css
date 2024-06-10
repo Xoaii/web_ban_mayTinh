@@ -752,11 +752,52 @@ p {
     color: #333;
 }
 
-a {
-    color: #007bff;
-    text-decoration: none;
+ a:hover {
+        text-decoration: underline;
+    }
+/*profile*/
+#profile-container {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 0;
 }
 
-    a:hover {
-        text-decoration: underline;
+    #profile-container .container {
+        width: 50%;
+        margin: 50px auto;
+        background: #fff;
+        padding: 20px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        border-radius: 8px;
+    }
+
+    #profile-container h1 {
+        text-align: center;
+        color: #333;
+    }
+
+#profile-info {
+    margin: 20px 0;
+}
+
+    #profile-info p {
+        font-size: 18px;
+        margin: 10px 0;
+    }
+
+#logout {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    background: #007BFF;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 18px;
+}
+
+    #logout:hover {
+        background: #0056b3;
     }
