@@ -384,24 +384,25 @@ a{
     fill: #a4aaaf;
     transition: all .2s ease-in-out;
 }
-.quantity-area .quantity-input {
-    background: #fff;
-    font-weight: 600;
-    height: 40px;
-    line-height: 40px;
-    width: 40px;
-    padding: 0;
-    text-align: center;
-    border: 1px solid #f3f4f4;
-    border-left: none;
-    border-right: none;
-    border-radius: 1px;
-    float: left;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    -o-appearance: none;
-    appearance: none;
-}
+    .quantity-area .quantity-input {
+        background: #fff;
+        font-weight: 600;
+        height: 40px;
+        line-height: 40px;
+        width: 40px;
+        padding: 0;
+        text-align: center;
+        border: 1px solid #f3f4f4;
+        border-left: none;
+        border-right: none;
+        border-radius: 1px;
+        float: left;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        -o-appearance: none;
+        appearance: none;
+        margin-bottom: 0;
+    }
 .addcart-area {
     display: flex;
     display: -ms-flex;
@@ -747,10 +748,10 @@ button[type="submit"] {
         background-color: #0056b3;
     }
 
-p {
+/*p {
     margin-top: 10px;
     color: #333;
-}
+}*/
 
  a:hover {
         text-decoration: underline;
@@ -798,6 +799,14 @@ p {
     font-size: 18px;
 }
 
-    #logout:hover {
+#logout:hover {
         background: #0056b3;
-    }
+ }
+span.soldold {
+    display: flex;
+    
+}
+p#tinh_trang {
+    color: chocolate;
+    font-weight: bold;
+}

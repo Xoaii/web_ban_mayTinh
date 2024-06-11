@@ -164,9 +164,11 @@ namespace maytinh.images
             switch (action)
             {
                 case "list_gioHang":
+                    cm.Parameters.Add("@accounts_id", SqlDbType.Int).Value = Convert.ToInt32(Request.Form["accounts_id"]);
+                    break;
+                case "delete_gioHang":
                     cm.Parameters.Add("@id", SqlDbType.Int).Value = Convert.ToInt32(Request.Form["id"]);
                     break;
-
             }
 
 
@@ -208,7 +210,7 @@ namespace maytinh.images
                     xuly_dangky(action);
                     break;
                 case "list_gioHang":
-
+                case "delete_gioHang":
                     xuly_giohang(action);
                     break;
 
