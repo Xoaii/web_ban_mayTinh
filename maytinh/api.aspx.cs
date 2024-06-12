@@ -157,6 +157,31 @@ namespace maytinh.images
             string json = (string)db.Scalar(cm);
             Response.Write(json);
         }
+        void xuly_danhmuc(string action)
+        {
+            SqlServer db = new SqlServer();
+            SqlCommand cm = db.GetCmd("SP_danhMuc", action);
+            switch (action)
+            {
+                case "get_list":
+                    cm.Parameters.Add("@id", SqlDbType.Int).Value = Convert.ToInt32(Request.Form["id_danhmuc"]);
+                    cm.Parameters.Add("@ten", SqlDbType.Int).Value = Request["ten_danhmuc"];
+                    cm.Parameters.Add("@mota", SqlDbType.Int).Value = Request["mota_danhmuc"];
+                    break;
+                case "insert":
+                case "delete":
+                    cm.Parameters.Add("@id", SqlDbType.Int).Value = Convert.ToInt32(Request.Form["id_danhmuc"]);
+                    break;
+
+            }
+
+
+
+
+            string json = (string)db.Scalar(cm);
+            Response.Write(json);
+        }
+
         void xuly_giohang(string action)
         {
             SqlServer db = new SqlServer();
@@ -167,12 +192,55 @@ namespace maytinh.images
                     cm.Parameters.Add("@accounts_id", SqlDbType.Int).Value = Convert.ToInt32(Request.Form["accounts_id"]);
                     break;
                 case "delete_gioHang":
+                    
                     cm.Parameters.Add("@id", SqlDbType.Int).Value = Convert.ToInt32(Request.Form["id"]);
+                    break;
+                case "edit_gioHang":
+                    cm.Parameters.Add("@id", SqlDbType.Int).Value = Convert.ToInt32(Request.Form["id"]);
+                    cm.Parameters.Add("@so_luong", SqlDbType.Int).Value = Request["so_luong"];
+
                     break;
             }
 
 
 
+
+            string json = (string)db.Scalar(cm);
+            Response.Write(json);
+        }
+        public void xuly_donHang(string action)
+        {
+            SqlServer db = new SqlServer();
+            SqlCommand cm = db.GetCmd("SP_donHang", action);
+
+            switch (action)
+            {
+                case "insert_donHang":
+                    cm.Parameters.Add("@user_id", SqlDbType.Int).Value = Request["user_id"];
+                    cm.Parameters.Add("@thanh_toan", SqlDbType.NVarChar, 50).Value = Request["thanh_toan"];
+                    cm.Parameters.Add("@product_id", SqlDbType.Int).Value = Request["product_id"];
+                    cm.Parameters.Add("@so_luong", SqlDbType.Int).Value = Request.Form["so_luong"];
+                    cm.Parameters.Add("@gia_ban", SqlDbType.Decimal).Value = Request.Form["gia_ban"];
+                    cm.Parameters.Add("@ho_ten", SqlDbType.NVarChar,50).Value = Request.Form["ho_ten"];
+                    cm.Parameters.Add("@dia_chi", SqlDbType.NVarChar, 100).Value = Request.Form["dia_chi"];
+                    cm.Parameters.Add("@sdt", SqlDbType.NVarChar, 10).Value = Request.Form["sdt"];
+                    break;
+
+                case "get_list_donHang":
+                    cm.Parameters.Add("@user_id", SqlDbType.Int).Value = Request["user_id"];
+                    break;
+
+                case "get_list_ad":
+                    // No additional parameters needed
+                    break;
+
+                case "delete_donHang":
+                    cm.Parameters.Add("@order_id", SqlDbType.Int).Value = Request.Form["order_id"];
+                    break;
+
+                default:
+                    throw new Exception("Hành động không hợp lệ.");
+            }
 
             string json = (string)db.Scalar(cm);
             Response.Write(json);
@@ -211,8 +279,22 @@ namespace maytinh.images
                     break;
                 case "list_gioHang":
                 case "delete_gioHang":
+                case "edit_gioHang":
                     xuly_giohang(action);
                     break;
+                case "get_list":
+                case "insert":
+                case "delete":
+                   xuly_danhmuc(action);
+                    break;
+                case "insert_donHang":
+                case "get_list_donHang":
+                case "get_list_ad":
+                case "delete_donHang":
+                    xuly_donHang(action); 
+                    break;
+                    
+
 
             }
         }

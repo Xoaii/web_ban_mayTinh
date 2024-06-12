@@ -98,7 +98,7 @@
     <Content Include="index.html" />
     <Content Include="mycode.js" />
     <Content Include="pay.html" />
-    <Content Include="products\product.html" />
+    <Content Include="product.html" />
     <Content Include="reset.css" />
     <Content Include="styles.css" />
     <Content Include="test.html" />
@@ -116,6 +116,9 @@
     <Compile Include="Lib\AppSettingsGet.cs" />
     <Compile Include="Lib\LibDB.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="products\" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
