@@ -309,6 +309,11 @@ namespace maytinh.images
                         // Trả về thông tin đơn hàng đã được tạo
                         HttpContext.Current.Response.Write(JsonConvert.SerializeObject(new { msg = "Đơn hàng đã được tạo", order_id = newOrderId }));
                         break;
+                    case "delete_donHang":
+                        // Truyền order_id cho action delete_donHang
+                        cm.Parameters.AddWithValue("@order_id", Convert.ToInt32(HttpContext.Current.Request.Form["order_id"]));
+                        break;
+
 
                     // Các case khác tạm thời không thay đổi
                     // ...
@@ -328,7 +333,29 @@ namespace maytinh.images
                 HttpContext.Current.Response.Write("Đã xảy ra lỗi khi xử lý đơn hàng: " + ex.Message);
             }
         }
+        void xuly_donhang2(string action)
+        {
+            SqlServer db = new SqlServer();
+            SqlCommand cm = db.GetCmd("SP_getListDonHang", action);
 
+            switch (action)
+            {
+                case "get_list_donHang":
+                    // Truy cập dữ liệu từ query string (ASP.NET Core)
+                    int userId = Convert.ToInt32(HttpContext.Current.Request.QueryString["user_id"]);
+                    // hoặc
+                    // Truy cập dữ liệu từ form (ASP.NET MVC)
+                    // int userId = Convert.ToInt32(HttpContext.Current.Request.Form["user_id"]);
+
+                    cm.Parameters.Add("@user_id", SqlDbType.Int).Value = userId;
+                    break;
+                case "get_list_ad":
+                    break;
+            }
+
+            string json = (string)db.Scalar(cm);
+            Response.Write(json);
+        }
         protected void Page_Load(object sender, EventArgs e)
         {
             string action = Request["action"];
@@ -370,12 +397,14 @@ namespace maytinh.images
                    xuly_danhmuc(action);
                     break;
                 case "insert_donHang":
-                case "get_list_donHang":
-                case "get_list_ad":
+               
                 case "delete_donHang":
                     xuly_donHang(action); 
                     break;
-                    
+                case "get_list_donHang":
+                case "get_list_ad":
+                    xuly_donhang2(action);
+                    break;
 
 
             }

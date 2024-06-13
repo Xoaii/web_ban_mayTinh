@@ -576,7 +576,6 @@ $(document).ready(function () {
 
         $('#total-price-pay').text(totalPrice.toLocaleString() + ' ₫');
     }
-
     function addOrder(accountId, cartItems, thanhToan, hoTen, diaChi, sdt) {
         console.log('Đặt hàng:', accountId, cartItems, thanhToan, hoTen, diaChi, sdt);
 
@@ -591,13 +590,15 @@ $(document).ready(function () {
         })
             .done(function (response) {
                 $('#order-status').text(response.msg);
+                alert("thành công");
+                window.location.href = '/index.html'; // Thay đổi đường dẫn nếu cần
             })
             .fail(function (xhr, status, error) {
                 console.error(xhr.responseText);
                 alert('Đã xảy ra lỗi: ' + xhr.responseText);
             });
     }
-
+    //end đặt hàng
 
     //function addOrder(userId, productId, quantity, price, thanhToan, hoTen, diaChi, sdt) {
     //    console.log("Thêm đơn hàng với thông tin:", userId, productId, quantity, price, hoTen, diaChi, sdt);
@@ -671,8 +672,46 @@ $(document).ready(function () {
 
 
     //end đặt hàng
-    
-        // Kiểm tra trạng thái đăng nhập khi trang được tải
+
+    // Kiểm tra trạng thái đăng nhập khi trang được tải
+    // xem đơn hàng
+    $('#view-order').click(function () {
+        requireLogin('get_list_donHang')
+    });
+
+    function loadOrders(accountId) {
+        console.log("Đơn hàng của account:", accountId);
+        $.get('api.aspx', { action: 'get_list_donHang', user_id: accountId }, function (data) {
+            console.log('Dữ liệu đơn hàng:', data); // Log dữ liệu trả về từ server
+            $('.order-list').empty(); // Xóa nội dung cũ
+
+            // Kiểm tra xem dữ liệu có thông báo lỗi không
+            if (data.hasOwnProperty('msg')) {
+                console.error('Lỗi khi tải đơn hàng:', data.msg);
+                $('.order-list').append('<p>' + data.msg + '</p>');
+            } else if (Array.isArray(data) && data.length > 0) {
+                // Nếu dữ liệu là một mảng và không rỗng
+                data.forEach(function (order) {
+                    renderOrder(order);
+                });
+            } else if (Array.isArray(data) && data.length === 0) {
+                // Nếu dữ liệu là một mảng và rỗng
+                console.log('Không có đơn hàng nào.');
+                $('.order-list').append('<p>Không có đơn hàng nào.</p>');
+            } else {
+                // Nếu dữ liệu không phải là mảng
+                console.log('Dữ liệu không hợp lệ:', data);
+                $('.order-list').append('<p>Dữ liệu đơn hàng không hợp lệ.</p>');
+            }
+        }).fail(function (xhr, status, error) {
+            // Hiển thị thông báo lỗi nếu không thể tải dữ liệu
+            console.error('Lỗi khi tải đơn hàng:', error);
+            $('.order-list').append('<p>Đã xảy ra lỗi khi tải đơn hàng.</p>');
+        });
+    }
+
+
+
         kiemTraDangNhap(function (response) {
             if (response.ok === 1) {
                 // Đã đăng nhập
@@ -809,6 +848,10 @@ $(document).ready(function () {
                 } 
                 else if (action === 'insert_donHang') {
                     addOrder(response.account_id, cartItems, thanhToan, hoTen, diaChi, sdt);
+                }
+                else if (action === 'get_list_donHang') {
+                    loadOrders(response.account_id);
+
                 }
             } else {
                 console.log('Người dùng chưa đăng nhập:', response.msg);

@@ -53,6 +53,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="auth.js" />
+    <Content Include="donhang.html" />
     <Content Include="images\pcworkstations\4.webp" />
     <Content Include="images\pcworkstations\5.webp" />
     <Content Include="images\pcworkstations\9.jpg" />
