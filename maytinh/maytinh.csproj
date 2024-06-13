@@ -53,6 +53,10 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="admin.html" />
+    <Content Include="assets\ad.js" />
+    <Content Include="assets\jquery-confirm.min.css" />
+    <Content Include="assets\jquery-confirm.min.js" />
+    <Content Include="assets\jquery.js" />
     <Content Include="auth.js" />
     <Content Include="donhang.html" />
     <Content Include="images\pcworkstations\4.webp" />

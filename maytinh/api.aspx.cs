@@ -368,6 +368,7 @@ namespace maytinh.images
             switch (action)
             {
                 case "list_SanPham":
+                case "list_SanPham_ad":
                 case "add_SanPham":
                 case "edit_SanPham":
                 case "delete_SanPham":
