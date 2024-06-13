@@ -208,44 +208,126 @@ namespace maytinh.images
             string json = (string)db.Scalar(cm);
             Response.Write(json);
         }
+        //public void xuly_donHang(string action)
+        //{
+        //    SqlServer db = new SqlServer();
+        //    SqlCommand cm = db.GetCmd("SP_donHang", action);
+
+        //    switch (action)
+        //    {
+        //        case "insert_donHang":
+        //            cm.Parameters.Add("@user_id", SqlDbType.Int).Value = Request["user_id"];
+        //            cm.Parameters.Add("@thanh_toan", SqlDbType.NVarChar, 50).Value = Request["thanh_toan"];
+        //            cm.Parameters.Add("@product_id", SqlDbType.Int).Value = Request["product_id"];
+        //            cm.Parameters.Add("@so_luong", SqlDbType.Int).Value = Request.Form["so_luong"];
+        //            cm.Parameters.Add("@gia_ban", SqlDbType.Decimal).Value = Request.Form["gia_ban"];
+        //            cm.Parameters.Add("@ho_ten", SqlDbType.NVarChar,50).Value = Request.Form["ho_ten"];
+        //            cm.Parameters.Add("@dia_chi", SqlDbType.NVarChar, 100).Value = Request.Form["dia_chi"];
+        //            cm.Parameters.Add("@sdt", SqlDbType.NVarChar, 10).Value = Request.Form["sdt"];
+        //            break;
+
+        //        case "get_list_donHang":
+        //            cm.Parameters.Add("@user_id", SqlDbType.Int).Value = Request["user_id"];
+        //            break;
+
+        //        case "get_list_ad":
+        //            // No additional parameters needed
+        //            break;
+
+        //        case "delete_donHang":
+        //            cm.Parameters.Add("@order_id", SqlDbType.Int).Value = Request.Form["order_id"];
+        //            break;
+
+        //        default:
+        //            throw new Exception("Hành động không hợp lệ.");
+        //    }
+
+        //    string json = (string)db.Scalar(cm);
+        //    Response.Write(json);
+        //}
+
+       public class CartItem
+{
+    public int product_id { get; set; }
+    public int so_luong { get; set; }
+    public decimal gia_ban { get; set; }
+}
+
         public void xuly_donHang(string action)
         {
-            SqlServer db = new SqlServer();
-            SqlCommand cm = db.GetCmd("SP_donHang", action);
-
-            switch (action)
+            try
             {
-                case "insert_donHang":
-                    cm.Parameters.Add("@user_id", SqlDbType.Int).Value = Request["user_id"];
-                    cm.Parameters.Add("@thanh_toan", SqlDbType.NVarChar, 50).Value = Request["thanh_toan"];
-                    cm.Parameters.Add("@product_id", SqlDbType.Int).Value = Request["product_id"];
-                    cm.Parameters.Add("@so_luong", SqlDbType.Int).Value = Request.Form["so_luong"];
-                    cm.Parameters.Add("@gia_ban", SqlDbType.Decimal).Value = Request.Form["gia_ban"];
-                    cm.Parameters.Add("@ho_ten", SqlDbType.NVarChar,50).Value = Request.Form["ho_ten"];
-                    cm.Parameters.Add("@dia_chi", SqlDbType.NVarChar, 100).Value = Request.Form["dia_chi"];
-                    cm.Parameters.Add("@sdt", SqlDbType.NVarChar, 10).Value = Request.Form["sdt"];
-                    break;
+                SqlServer db = new SqlServer();
+                SqlCommand cm = db.GetCmd("SP_donHang", action);
+                cm.CommandType = CommandType.StoredProcedure;
 
-                case "get_list_donHang":
-                    cm.Parameters.Add("@user_id", SqlDbType.Int).Value = Request["user_id"];
-                    break;
+                switch (action)
+                {
+                    case "insert_donHang":
+                        // Lấy dữ liệu từ request
+                        int userId = Convert.ToInt32(HttpContext.Current.Request["user_id"]);
+                        string thanhToan = HttpContext.Current.Request["thanh_toan"];
+                        string hoTen = HttpContext.Current.Request["ho_ten"];
+                        string diaChi = HttpContext.Current.Request["dia_chi"];
+                        string sdt = HttpContext.Current.Request["sdt"];
 
-                case "get_list_ad":
-                    // No additional parameters needed
-                    break;
+                        // Tạo bảng tạm lưu thông tin chi tiết đơn hàng
+                        DataTable dt = new DataTable();
+                        dt.Columns.Add("product_id", typeof(int));
+                        dt.Columns.Add("so_luong", typeof(int));
+                        dt.Columns.Add("gia_ban", typeof(decimal));
 
-                case "delete_donHang":
-                    cm.Parameters.Add("@order_id", SqlDbType.Int).Value = Request.Form["order_id"];
-                    break;
+                        // Lấy thông tin giỏ hàng từ JSON và thêm vào bảng tạm
+                        var cartItems = JsonConvert.DeserializeObject<List<CartItem>>(HttpContext.Current.Request["cart_items"]);
+                        foreach (var item in cartItems)
+                        {
+                            DataRow row = dt.NewRow();
+                            row["product_id"] = item.product_id;
+                            row["so_luong"] = item.so_luong;
+                            row["gia_ban"] = item.gia_ban;
+                            dt.Rows.Add(row);
+                        }
 
-                default:
-                    throw new Exception("Hành động không hợp lệ.");
+                        // Thêm các tham số vào stored procedure
+                        cm.Parameters.AddWithValue("@user_id", userId);
+                        cm.Parameters.AddWithValue("@thanh_toan", thanhToan);
+                        cm.Parameters.AddWithValue("@ho_ten", hoTen);
+                        cm.Parameters.AddWithValue("@dia_chi", diaChi);
+                        cm.Parameters.AddWithValue("@sdt", sdt);
+                        SqlParameter param = cm.Parameters.AddWithValue("@order_details", dt);
+                        param.SqlDbType = SqlDbType.Structured;
+                        param.TypeName = "dbo.OrderDetailsType";
+
+                        // Thêm tham số đầu ra để lấy order_id mới tạo
+                        SqlParameter orderIdParam = cm.Parameters.Add("@order_id", SqlDbType.Int);
+                        orderIdParam.Direction = ParameterDirection.Output;
+
+                        // Thực thi stored procedure
+                        int rowsAffected = db.RunSQL(cm);
+                        int newOrderId = (int)orderIdParam.Value;
+
+                        // Trả về thông tin đơn hàng đã được tạo
+                        HttpContext.Current.Response.Write(JsonConvert.SerializeObject(new { msg = "Đơn hàng đã được tạo", order_id = newOrderId }));
+                        break;
+
+                    // Các case khác tạm thời không thay đổi
+                    // ...
+
+                    default:
+                        throw new Exception("Hành động không hợp lệ.");
+                }
             }
-
-            string json = (string)db.Scalar(cm);
-            Response.Write(json);
+            catch (JsonSerializationException ex)
+            {
+                HttpContext.Current.Response.StatusCode = 400; // Bad Request
+                HttpContext.Current.Response.Write("Dữ liệu JSON không hợp lệ.");
+            }
+            catch (Exception ex)
+            {
+                HttpContext.Current.Response.StatusCode = 500; // Internal Server Error
+                HttpContext.Current.Response.Write("Đã xảy ra lỗi khi xử lý đơn hàng: " + ex.Message);
+            }
         }
-
 
         protected void Page_Load(object sender, EventArgs e)
         {
