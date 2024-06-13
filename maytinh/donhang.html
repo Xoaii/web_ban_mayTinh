@@ -3,37 +3,93 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đơn hàng đã đặt</title>
     <script src="Scripts/jquery-3.7.1.min.js"></script>
     <script src="mycode.js"></script>
-    <title>Đơn hàng đã đặt</title>
     <style>
-        /* Style cho trang */
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
             padding: 20px;
+            background-color: #f4f4f9;
+            color: #333;
         }
 
         h1 {
             text-align: center;
+            color: #444;
         }
 
         .order-list {
             margin: 20px auto;
             width: 80%;
+            max-width: 1000px;
         }
 
         .order {
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            padding: 10px;
-            margin-bottom: 10px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            position: relative;
         }
 
+            .order p {
+                margin: 5px 0;
+            }
+
         .order-details {
-            margin-top: 10px;
-            padding-top: 10px;
-            border-top: 1px solid #ccc;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #ddd;
+        }
+
+            .order-details ul {
+                list-style: none;
+                padding: 0;
+            }
+
+            .order-details li {
+                padding: 8px 0;
+                border-bottom: 1px solid #eee;
+            }
+
+                .order-details li:last-child {
+                    border-bottom: none;
+                }
+
+            .order-details strong {
+                display: block;
+                margin-bottom: 5px;
+            }
+
+        .cancel-button {
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            position: absolute;
+            top: 20px;
+            right: 20px;
+        }
+
+            .cancel-button:hover {
+                background-color: #c0392b;
+            }
+
+        @media (max-width: 600px) {
+            .order-list {
+                width: 100%;
+                padding: 10px;
+            }
+
+            .order {
+                padding: 15px;
+            }
         }
     </style>
 </head>
@@ -42,8 +98,5 @@
     <div class="order-list">
         <!-- Danh sách đơn hàng sẽ được hiển thị ở đây -->
     </div>
-
-   
-    
 </body>
 </html>

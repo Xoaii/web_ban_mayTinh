@@ -679,38 +679,144 @@ $(document).ready(function () {
         requireLogin('get_list_donHang')
     });
 
+    
+    var accountId = sessionStorage.getItem('accountId');
+    console.log("accountId từ sessionStorage:", accountId);
+
+    if (accountId) {
+        loadOrders(accountId);
+        checkUserRole(accountId)
+    } else {
+        console.error('Không tìm thấy accountId trong sessionStorage');
+        $('.order-list').append('<p>Không tìm thấy thông tin tài khoản.</p>');
+    }
+    // Hàm để ẩn hoặc hiển thị nút quản lý dựa trên quyền của người dùng
+    $('#admin-button').hide();
+    function toggleAdminButton(roleId) {
+        // Nếu roleId = 1, đây là quyền admin, hiển thị nút quản lý
+        if (roleId === 1) {
+            $('#admin-button').show();
+        } else {
+            $('#admin-button').hide();
+        }
+    }
+
+    // Hàm gọi API để lấy thông tin người dùng và xử lý nút quản lý
+    function checkUserRole(accountId) {
+        getUserInfo(accountId, function (userData) {
+            if (userData) {
+                // userData chứa thông tin người dùng, bao gồm roleId
+                console.log('Thông tin người dùng:', userData);
+                toggleAdminButton(userData.role_id);
+            } else {
+                console.error('Không thể lấy thông tin người dùng.');
+            }
+        });
+    }
     function loadOrders(accountId) {
         console.log("Đơn hàng của account:", accountId);
         $.get('api.aspx', { action: 'get_list_donHang', user_id: accountId }, function (data) {
-            console.log('Dữ liệu đơn hàng:', data); // Log dữ liệu trả về từ server
-            $('.order-list').empty(); // Xóa nội dung cũ
+            console.log('Dữ liệu đơn hàng:', data);
+            $('.order-list').empty();
 
-            // Kiểm tra xem dữ liệu có thông báo lỗi không
+            if (typeof data === 'string') {
+                try {
+                    data = JSON.parse(data);
+                    console.log('Dữ liệu JSON sau khi parse:', data);
+                } catch (e) {
+                    console.error('Dữ liệu JSON không hợp lệ:', data);
+                    $('.order-list').append('<p>Dữ liệu JSON không hợp lệ.</p>');
+                    return;
+                }
+            }
+
             if (data.hasOwnProperty('msg')) {
                 console.error('Lỗi khi tải đơn hàng:', data.msg);
                 $('.order-list').append('<p>' + data.msg + '</p>');
             } else if (Array.isArray(data) && data.length > 0) {
-                // Nếu dữ liệu là một mảng và không rỗng
                 data.forEach(function (order) {
                     renderOrder(order);
                 });
             } else if (Array.isArray(data) && data.length === 0) {
-                // Nếu dữ liệu là một mảng và rỗng
                 console.log('Không có đơn hàng nào.');
                 $('.order-list').append('<p>Không có đơn hàng nào.</p>');
             } else {
-                // Nếu dữ liệu không phải là mảng
                 console.log('Dữ liệu không hợp lệ:', data);
                 $('.order-list').append('<p>Dữ liệu đơn hàng không hợp lệ.</p>');
             }
         }).fail(function (xhr, status, error) {
-            // Hiển thị thông báo lỗi nếu không thể tải dữ liệu
             console.error('Lỗi khi tải đơn hàng:', error);
             $('.order-list').append('<p>Đã xảy ra lỗi khi tải đơn hàng.</p>');
         });
     }
 
+    function renderOrder(order) {
+        var orderHtml = `
+            <div class="order" data-order-id="${order.order_id}">
+                <p><strong>Đơn hàng #${order.order_id}</strong></p>
+                <p><strong>Họ tên:</strong> ${order.ho_ten}</p>
+                <p><strong>Địa chỉ:</strong> ${order.dia_chi}</p>
+                <p><strong>Số điện thoại:</strong> ${order.sdt}</p>
+                <p><strong>Phương thức thanh toán:</strong> ${order.thanh_toan}</p>
+                <div class="order-details">
+                    <p><strong>Chi tiết đơn hàng:</strong></p>
+                    <ul>`;
+        order.chi_tiet_don_hang.forEach(function (item) {
+            orderHtml += `<li>${item.so_luong} x ${item.ten} - ${item.gia_ban.toLocaleString()} ₫</li>`;
+        });
+        orderHtml += `
+                    </ul>
+                </div>
+                  <button class="cancel-button">Hủy</button>
+            </div>
+        `;
+       /* console.log('HTML của đơn hàng:', orderHtml);*/
+        $('.order-list').append(orderHtml);
+    }
+    function deleteOrder(orderId, accountId) {
+        $.post(api, { action: 'delete_donHang', order_id: orderId}, function (response) {
+            if (response.trim() === '') {
+                console.error('Phản hồi từ máy chủ rỗng.');
+                // Hiển thị thông báo lỗi hoặc xử lý tùy thuộc vào yêu cầu
+            } else {
+                console.log('Phản hồi từ máy chủ:', response);
+                loadOrders(accountId);
+                //try {
+                //    var responseData = JSON.parse(response);
+                //    if (responseData.hasOwnProperty('ok')) {
+                //        if (responseData.ok === 1) {
+                //            console.log('Đơn hàng đã được xóa.');
+                //            // Tải lại danh sách đơn hàng sau khi xóa thành công
+                //            loadOrders(accountId);
+                //        } else {
+                //            console.error('Lỗi khi xóa đơn hàng:', responseData.msg);
+                //            // Hiển thị thông báo lỗi hoặc xử lý tùy thuộc vào yêu cầu
+                //        }
+                //    } else {
+                //        console.error('Dữ liệu phản hồi không hợp lệ:', response);
+                //        // Hiển thị thông báo lỗi hoặc xử lý tùy thuộc vào yêu cầu
+                //    }
+                //} catch (error) {
+                //    console.error('Lỗi khi xử lý phản hồi:', error);
+                //    // Hiển thị thông báo lỗi hoặc xử lý tùy thuộc vào yêu cầu
+                //}
+            }
+        }).fail(function (xhr, status, error) {
+            console.error('Lỗi khi gửi yêu cầu:', error);
+            // Hiển thị thông báo lỗi hoặc xử lý tùy thuộc vào yêu cầu
+        });
+    }
 
+
+
+    // Sự kiện bấm nút hủy
+    $(document).on('click', '.cancel-button', function () {
+        var orderId = $(this).closest('.order').data('order-id');
+        var accountId = sessionStorage.getItem('accountId'); // Lấy accountId từ sessionStorage hoặc từ nơi khác
+        if (confirm('Bạn có chắc chắn muốn hủy đơn hàng này?')) {
+            deleteOrder(orderId, accountId);
+        }
+    });
 
         kiemTraDangNhap(function (response) {
             if (response.ok === 1) {
@@ -850,7 +956,11 @@ $(document).ready(function () {
                     addOrder(response.account_id, cartItems, thanhToan, hoTen, diaChi, sdt);
                 }
                 else if (action === 'get_list_donHang') {
-                    loadOrders(response.account_id);
+                    /* loadOrders(response.account_id);*/
+                    // Lưu account_id vào sessionStorage
+                    sessionStorage.setItem('accountId', response.account_id);
+                    // Chuyển hướng đến trang đơn hàng
+                    window.location.href = 'donhang.html';
 
                 }
             } else {
@@ -863,7 +973,7 @@ $(document).ready(function () {
             }
         });
     }
-
+   
     // Function to check login status
     function kiemTraDangNhap(callback) {
         console.log('Đang kiểm tra trạng thái đăng nhập...');

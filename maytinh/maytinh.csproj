@@ -52,6 +52,7 @@
     <Reference Include="System.EnterpriseServices" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="admin.html" />
     <Content Include="auth.js" />
     <Content Include="donhang.html" />
     <Content Include="images\pcworkstations\4.webp" />

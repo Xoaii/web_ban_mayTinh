@@ -309,10 +309,7 @@ namespace maytinh.images
                         // Trả về thông tin đơn hàng đã được tạo
                         HttpContext.Current.Response.Write(JsonConvert.SerializeObject(new { msg = "Đơn hàng đã được tạo", order_id = newOrderId }));
                         break;
-                    case "delete_donHang":
-                        // Truyền order_id cho action delete_donHang
-                        cm.Parameters.AddWithValue("@order_id", Convert.ToInt32(HttpContext.Current.Request.Form["order_id"]));
-                        break;
+                   
 
 
                     // Các case khác tạm thời không thay đổi
@@ -350,6 +347,14 @@ namespace maytinh.images
                     cm.Parameters.Add("@user_id", SqlDbType.Int).Value = userId;
                     break;
                 case "get_list_ad":
+                    break;
+                case "delete_donHang":
+                    int orderId = Convert.ToInt32(HttpContext.Current.Request.Form["order_id"]);
+                    // Thực hiện xóa đơn hàng ở đây
+                    cm.Parameters.Add("@order_id", SqlDbType.Int).Value = orderId;
+                    // Trả về mã trạng thái 200 OK nếu xóa thành công
+                    HttpContext.Current.Response.StatusCode = 200;
+                    HttpContext.Current.Response.Write("Đã xóa đơn hàng thành công.");
                     break;
             }
 
@@ -398,11 +403,12 @@ namespace maytinh.images
                     break;
                 case "insert_donHang":
                
-                case "delete_donHang":
                     xuly_donHang(action); 
                     break;
                 case "get_list_donHang":
                 case "get_list_ad":
+
+                case "delete_donHang":
                     xuly_donhang2(action);
                     break;
 
