@@ -765,6 +765,8 @@ $(document).ready(function () {
         var orderHtml = `
             <div class="order" data-order-id="${order.order_id}">
                 <p><strong>Đơn hàng #${order.order_id}</strong></p>
+                <p><strong>Ngày Đặt:</strong> ${order.ngay_dat}</p>
+                <p><strong>Trạng thái:</strong> ${order.trang_thai}</p>
                 <p><strong>Họ tên:</strong> ${order.ho_ten}</p>
                 <p><strong>Địa chỉ:</strong> ${order.dia_chi}</p>
                 <p><strong>Số điện thoại:</strong> ${order.sdt}</p>

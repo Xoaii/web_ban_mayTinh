@@ -356,6 +356,14 @@ namespace maytinh.images
                     HttpContext.Current.Response.StatusCode = 200;
                     HttpContext.Current.Response.Write("Đã xóa đơn hàng thành công.");
                     break;
+                case "edit_donHang":
+                    // Ép kiểu order_id sang chuỗi (string)
+                    int orderId2 = Convert.ToInt32(HttpContext.Current.Request["order_id"]);
+                    string trangThai = HttpContext.Current.Request["trang_thai"];
+
+                    cm.Parameters.Add("@order_id", SqlDbType.Int).Value = orderId2;
+                    cm.Parameters.Add("@trang_thai", SqlDbType.NVarChar, 50).Value = trangThai;
+                    break;
             }
 
             string json = (string)db.Scalar(cm);
@@ -408,7 +416,7 @@ namespace maytinh.images
                     break;
                 case "get_list_donHang":
                 case "get_list_ad":
-
+                case "edit_donHang":
                 case "delete_donHang":
                     xuly_donhang2(action);
                     break;

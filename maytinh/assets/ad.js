@@ -229,6 +229,157 @@
             }
         });
     });
+    updateOrderList();
+    function updateOrderList() {
+        $.post(api, { action: 'get_list_ad' }, function (response) {
+            console.log('Dữ liệu JSON nhận được:', response); // Log dữ liệu JSON để kiểm tra
+            try {
+                var orders = JSON.parse(response);
+                console.log(orders);
+                var orderListHtml = "";
+                for (var order of orders) {
+                    var chiTietDonHangHtml = "";
+                    for (var chiTiet of order.chi_tiet_don_hang) {
+                        chiTietDonHangHtml += `
+                        <p>Tên sản phẩm: ${chiTiet.ten_san_pham}</p>
+                        <p>Số lượng: ${chiTiet.so_luong}</p>
+                        <p>Giá bán: ${chiTiet.gia_ban}</p>
+                    `;
+                    }
+
+                    orderListHtml += `
+                    <table class="w3-table-all w3-centered table">
+                        <thead>
+                            <tr class="w3-hover-green">
+                                <th>ID Đơn Hàng</th>
+                                <th>Ngày Đặt</th>
+                                <th>Trạng Thái</th>
+                                <th>Họ Tên</th>
+                                <th>Địa Chỉ</th>
+                                <th>SĐT</th>
+                                <th>Thanh Toán</th>
+                                <th>Chi Tiết Đơn Hàng</th>
+                                <th>Thao Tác</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>${order.order_id}</td>
+                                <td>${order.ngay_dat}</td>
+                                <td>${order.trang_thai}</td>
+                                <td>${order.ho_ten}</td>
+                                <td>${order.dia_chi}</td>
+                                <td>${order.sdt}</td>
+                                <td>${order.thanh_toan}</td>
+                                <td>${chiTietDonHangHtml}</td>
+                                <td>
+                                    <button class="nut-sua-xoa" data-action="edit_donHang" data-cid="${order.order_id}">Sửa</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                `;
+                }
+                $('.order-list').html(orderListHtml);
+                $('.nut-sua-xoa').click(function () {
+                    var action = $(this).data('action');
+                    var id = $(this).data('cid');
+                    if (action == 'edit_donHang') {
+                        editOrder(id, orders);
+                    }
+                });
+            } catch (error) {
+                console.error('Lỗi khi phân tích dữ liệu JSON:', error);
+            }
+        }).fail(function (xhr, status, error) {
+            console.error('Lỗi khi gửi yêu cầu:', error);
+        });
+    }
 
     
+    function editOrder(order_id, json) {
+        var order;
+        // Tìm đơn hàng trong danh sách
+        for (var item of json) {
+            if (item.order_id == order_id) {
+                order = item;
+                break;
+            }
+        }
+
+        if (!order) {
+            console.error('Không tìm thấy đơn hàng để chỉnh sửa');
+            return;
+        }
+
+        // Hiển thị dialog chỉnh sửa
+        var content = `
+    Trạng thái: <input class="w3-input" type="text" id="edit-trang-thai" value="${order.trang_thai || ''}"><br>
+`;
+
+        var editDialog = $.confirm({
+            title: 'Chỉnh sửa đơn hàng',
+            content: function () {
+                var orderStatusOptions = ['Đang xử lý', 'Chờ giao hàng', 'Đang giao', 'Đã giao', 'Thành công'];
+                var orderStatusSelect = '<select id="edit-trang-thai" class="w3-input">';
+                orderStatusOptions.forEach(function (status) {
+                    orderStatusSelect += '<option value="' + status + '">' + status + '</option>';
+                });
+                orderStatusSelect += '</select>';
+
+                return `
+            <label for="edit-trang-thai">Trạng thái:</label><br>
+            ${orderStatusSelect}<br>
+        `;
+            },
+            boxWidth: '50%',
+            useBootstrap: false,
+            type: 'green',
+            buttons: {
+                save: {
+                    btnClass: 'btn-green',
+                    action: function () {
+                        var trang_thai = $('#edit-trang-thai').val();
+
+                        var dataToSend = {
+                            action: 'edit_donHang', // Action chỉnh sửa đơn hàng
+                            order_id: order_id, // Sử dụng order_id của đơn hàng
+                            trang_thai: trang_thai,
+                        };
+
+                        console.log('Dữ liệu gửi đi:', dataToSend);
+
+                        // Gửi dữ liệu đến server để chỉnh sửa đơn hàng
+                        $.post(api, dataToSend, function (data) {
+                            console.log('Dữ liệu nhận được từ máy chủ:', data);
+                            if (data.trim() !== '') {
+                                try {
+                                    var json = JSON.parse(data);
+                                    console.log(json); // Log dữ liệu trả về từ máy chủ
+                                    if (json.success === 1) {
+                                        editDialog.close();
+                                         // Cập nhật lại danh sách đơn hàng sau khi chỉnh sửa
+                                    } else {
+                                        alert('Cập nhật đơn hàng không thành công');
+                                        updateOrderList();
+                                    }
+                                } catch (error) {
+                                    console.error('Lỗi khi phân tích dữ liệu JSON:', error);
+                                    alert('Đã xảy ra lỗi khi xử lý dữ liệu từ máy chủ');
+                                }
+                            } else {
+                                alert('Không có dữ liệu được trả về từ máy chủ');
+                            }
+                        }).fail(function (xhr, status, error) {
+                            console.error('Lỗi khi gửi yêu cầu:', error);
+                            alert('Đã xảy ra lỗi khi gửi yêu cầu đến máy chủ');
+                        });
+                    }
+                },
+                close: {}
+            }
+        });
+
+    }
+
 });
