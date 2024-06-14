@@ -719,6 +719,13 @@ $(document).ready(function () {
             console.log('Dữ liệu đơn hàng:', data);
             $('.order-list').empty();
 
+            // Kiểm tra xem phản hồi có phải là chuỗi rỗng hay không
+            if (!data || data.trim() === '') {
+                console.log('Không có đơn hàng nào.');
+                $('.order-list').append('<p>Không có đơn hàng nào.</p>');
+                return;
+            }
+
             if (typeof data === 'string') {
                 try {
                     data = JSON.parse(data);
@@ -733,13 +740,15 @@ $(document).ready(function () {
             if (data.hasOwnProperty('msg')) {
                 console.error('Lỗi khi tải đơn hàng:', data.msg);
                 $('.order-list').append('<p>' + data.msg + '</p>');
-            } else if (Array.isArray(data) && data.length > 0) {
-                data.forEach(function (order) {
-                    renderOrder(order);
-                });
-            } else if (Array.isArray(data) && data.length === 0) {
-                console.log('Không có đơn hàng nào.');
-                $('.order-list').append('<p>Không có đơn hàng nào.</p>');
+            } else if (Array.isArray(data)) {
+                if (data.length > 0) {
+                    data.forEach(function (order) {
+                        renderOrder(order);
+                    });
+                } else {
+                    console.log('Không có đơn hàng nào.');
+                    $('.order-list').append('<p>Không có đơn hàng nào.</p>');
+                }
             } else {
                 console.log('Dữ liệu không hợp lệ:', data);
                 $('.order-list').append('<p>Dữ liệu đơn hàng không hợp lệ.</p>');
@@ -750,7 +759,9 @@ $(document).ready(function () {
         });
     }
 
+
     function renderOrder(order) {
+        var totalPrice = 0;
         var orderHtml = `
             <div class="order" data-order-id="${order.order_id}">
                 <p><strong>Đơn hàng #${order.order_id}</strong></p>
@@ -762,11 +773,15 @@ $(document).ready(function () {
                     <p><strong>Chi tiết đơn hàng:</strong></p>
                     <ul>`;
         order.chi_tiet_don_hang.forEach(function (item) {
+            var itemTotal = item.so_luong * item.gia_ban;
+            totalPrice += itemTotal;
             orderHtml += `<li>${item.so_luong} x ${item.ten} - ${item.gia_ban.toLocaleString()} ₫</li>`;
         });
         orderHtml += `
                     </ul>
+                    <p><strong>Tổng tiền:</strong> ${totalPrice.toLocaleString()} ₫</p>
                 </div>
+
                   <button class="cancel-button">Hủy</button>
             </div>
         `;

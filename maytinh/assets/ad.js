@@ -104,11 +104,13 @@
             console.log('Dữ liệu JSON nhận được:', response); // Log dữ liệu JSON để kiểm tra
             try {
                 var json = JSON.parse(response);
+                console.log(json);
                 var productListHtml = "";
                 if (json.data) {
-                    productListHtml += `<table class="table">
+                    productListHtml += `
+                    <table class=" w3-table-all w3-centered table">
                    <thead>
-                   <tr>
+                   <tr class="w3-hover-green">
                      <th>ID</th>
                      <th>Tên</th>
                      <th>Mô tả</th>
@@ -123,8 +125,8 @@
                    </thead><tbody>`;
                     var stt = 0;
                     for (var product of json.data) {
-                        var sua_xoa = `<button class="w3-button w3-round nut-sua-xoa" data-cid="${product.id}" data-action="edit_SanPham">Sửa</button>`;
-                        sua_xoa += ` <button class="w3-button w3-round nut-sua-xoa" data-cid="${product.id}" data-action="delete_SanPham">Xóa</button>`;
+                        var sua_xoa = `<button class="w3-button w3-white w3-border w3-border-red w3-round-large nut-sua-xoa" data-cid="${product.id}" data-action="edit_SanPham">Sửa</button>`;
+                        sua_xoa += ` <button class="w3-button w3-blue w3-round-large nut-sua-xoa" data-cid="${product.id}" data-action="delete_SanPham">Xóa</button>`;
                         productListHtml += `
                      <tr>
                      <td>${product.id}</td>
@@ -167,14 +169,66 @@
     }
 
 
-    // Gọi hàm updateProductList khi trang được tải
-    //$('#admin-button').click(function () {
-    //    updateProductList();
-    //});
+   
 
     updateProductList();
+    $('#themsp').click(function () {
+        // Đảm bảo bạn đã có dữ liệu sản phẩm để hiển thị trong dialog
+        var SanPham = {};
 
+        var content = `
+        Tên sản phẩm: <input class="w3-input" type="text" id="nhap-ten" "><br>
+        Mô tả: <input class="w3-input" type="text" id="nhap-mo-ta" "><br>
+        Giá: <input class="w3-input" type="text" id="nhap-gia" "><br>
+        Số lượng: <input class="w3-input" type="text" id="nhap-so-luong" "><br>
+        Hãng: <input class="w3-input" type="text" id="nhap-hang" "><br>
+        Sales ID: <input class="w3-input" type="text" id="nhap-sales-id" "><br>
+        Category ID: <input class="w3-input" type="text" id="nhap-cartegory-id" "><br>
+        Ảnh: <input class="w3-input" type="text" id="nhap-image" "><br>
+    `;
 
+        var dialog_add = $.confirm({
+            title: 'Thêm Sản phẩm',
+            content: content,
+            columnClass: 'large',
+            boxWidth: '50%',
+            useBootstrap: false,
 
-    ////end quản lý sp
+            type: 'green',
+            buttons: {
+                save: {
+                    btnClass: 'btn-green',
+                    action: function () {
+                        var data_gui_di = {
+                            action: 'add_SanPham',
+                            ten: $('#nhap-ten').val(),
+                            mo_ta: $('#nhap-mo-ta').val(),
+                            gia: $('#nhap-gia').val(),
+                            so_luong: $('#nhap-so-luong').val(),
+                            hang: $('#nhap-hang').val(),
+                            sales_id: $('#nhap-sales-id').val(),
+                            cartegory_id: $('#nhap-cartegory-id').val(),
+                            image: $('#nhap-image').val(),
+                        };
+
+                        console.log(data_gui_di);
+
+                        $.post(api, data_gui_di, function (data) {
+                            var json = JSON.parse(data);
+                            if (json.ok) {
+                                dialog_add.close();
+                                updateProductList(); // Cập nhật danh sách sản phẩm sau khi thêm mới
+                            } else {
+                                alert(json.msg);
+                            }
+                        });
+                    }
+                },
+                close: function () {
+                }
+            }
+        });
+    });
+
+    
 });
