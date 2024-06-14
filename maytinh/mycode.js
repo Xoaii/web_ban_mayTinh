@@ -1168,7 +1168,108 @@ $(document).ready(function () {
 
 
 
-  
+
+
+    $.post(api, { action: 'list_SanPham_ad' }, function (response) {
+        console.log(response); // Kiểm tra cấu trúc của dữ liệu phản hồi từ API
+
+        try {
+            var parsedResponse = JSON.parse(response);
+            if (parsedResponse.ok === 1 && parsedResponse.data && Array.isArray(parsedResponse.data)) {
+                window.productList = parsedResponse.data;
+                console.log(window.productList); // Kiểm tra dữ liệu đã lưu vào biến global
+            } else {
+                console.error('Dữ liệu trả về không hợp lệ!');
+                console.log(parsedResponse.msg); // Log ra thông báo lỗi (nếu có)
+            }
+        } catch (error) {
+            console.error('Lỗi khi xử lý dữ liệu JSON:', error);
+        }
+    });
+
+
+
+
+
+    // Xử lý sự kiện khi người dùng nhập vào ô tìm kiếm
+    //$('#timkiemsp').on('input', function () {
+    //    var searchValue = $(this).val().trim().toLowerCase();
+    //    var resultsHtml = '';
+    //    productList.forEach(function (product) {
+    //        if (product.ten.toLowerCase().indexOf(searchValue) !== -1) {
+    //            resultsHtml += '<div class="product-item">' +
+    //                '<a href="product.html?product_id=' + product.id + '">' +
+    //                '<img src="' + product.image + '" alt="' + product.ten + '">' +
+    //                '<div>' + product.ten + '</div>' +
+    //                '</a>' +
+    //                '</div>';
+    //        }
+    //    });
+    //    $('#searchResults').html(resultsHtml);
+    //    $('#searchResults').css('display', resultsHtml ? 'block' : 'none');
+    //});
+    $('#timkiemsp').on('input', function () {
+        var searchValue = $(this).val().trim().toLowerCase();
+        var resultsHtml = '';
+        productList.forEach(function (product) {
+            if (product.ten.toLowerCase().indexOf(searchValue) !== -1) {
+                resultsHtml += '<div class="product-item">' +
+                    '<a href="product.html?product_id=' + product.id + '">' +
+                    '<img src="' + product.image + '" alt="' + product.ten + '">' +
+                    '<div>' + product.ten + '</div>' +
+                    '</a>' +
+                    '</div>';
+            }
+        });
+
+        if (resultsHtml === '') {
+            resultsHtml = '<div class="no-results">Không tìm thấy sản phẩm nào</div>';
+        }
+
+        $('#searchResults').html(resultsHtml);
+        if (searchValue) {
+            $('#searchResults').css('display', 'block');
+        } else {
+            $('#searchResults').css('display', 'none');
+        }
+    });
+
+    $('#timkiemsp').on('focus', function () {
+        $('#searchResults').css('display', 'block');
+    });
+
+    // Sử dụng sự kiện mousedown thay vì click
+    $('#searchResults').on('mousedown', function () {
+        // Đảm bảo box kết quả không bị ẩn khi click vào nó
+        $('#searchResults').css('display', 'block');
+    });
+
+    $('#timkiemsp').on('blur', function () {
+        // Kiểm tra xem có click vào box kết quả không
+        setTimeout(function () {
+            if (!$('#searchResults').is(':focus')) {
+                $('#searchResults').css('display', 'none');
+            }
+        }, 200);
+    });
+
+    // Hàm hiển thị gợi ý
+    function showSuggestions(suggestions) {
+        var html = '';
+        $.each(suggestions, function (index, product) {
+            html += '<div class="suggestion" data-id="' + product.id + '">' +
+                product.ten +
+                '</div>';
+        });
+
+        $('#suggestions').html(html);
+    }
+
+    // Xử lý khi click vào gợi ý sản phẩm
+    $(document).on('click', '.suggestion', function () {
+        var productId = $(this).data('id');
+        // Thực hiện hành động khi chọn sản phẩm, ví dụ: hiển thị thông tin sản phẩm, ...
+    });
       
 });
 // Function to check login status

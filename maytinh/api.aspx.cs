@@ -57,12 +57,15 @@ namespace maytinh.images
             {
                 case "edit_SanPham":
                 case "delete_SanPham":
-                case "search_SanPham":
+                
                     cm.Parameters.Add("@id", SqlDbType.Int).Value = Convert.ToInt32(Request.Form["id"]);
                     break;
                 case "get_SanPham":
                     // Lấy thông tin sản phẩm dựa trên productId
                     cm.Parameters.Add("@product_id", SqlDbType.Int).Value = Convert.ToInt32(Request.Form["product_id"]);
+                    break;
+                case "search_SanPham":
+                    cm.Parameters.Add("@ten", SqlDbType.NVarChar, 100).Value = Request.Form["ten"];
                     break;
             }
 
