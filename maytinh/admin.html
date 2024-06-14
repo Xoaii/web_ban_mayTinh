@@ -9,6 +9,8 @@
     <script src="assets/jquery.js"></script>
     <link href="assets/jquery-confirm.min.css" rel="stylesheet" />
     <script src="assets/jquery-confirm.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.9/xlsx.full.min.js"></script>
+
     <script src="assets/ad.js"></script>
     <style>
         body {
@@ -47,8 +49,8 @@
         <p>Đây là trang quản lý admin của bạn.</p>
         <p>Bạn có thể thực hiện các hoạt động quản lý ở đây.</p>
         <div class="w3-bar w3-light-grey">
-            <button class="w3-bar-item w3-button tablink" onclick="openTab(event, 'Tab1')">Quản sản phẩm</button>
-            <button class="w3-bar-item w3-button tablink" onclick="openTab(event, 'Tab2')">Tab 2</button>
+            <button class="w3-bar-item w3-button tablink" onclick="openTab(event, 'Tab1')">Quản lý sản phẩm</button>
+            <button class="w3-bar-item w3-button tablink" onclick="openTab(event, 'Tab2')">Quản lý đơn hàng</button>
             <button class="w3-bar-item w3-button tablink" onclick="openTab(event, 'Tab3')">Tab 3</button>
         </div>
 
@@ -60,6 +62,7 @@
             </div>
         </div>
         <div id="Tab2" class="tab">
+            <button id="exportExcel" class="btn btn-primary">Xuất Excel</button>
             <!--<button class="w3-button w3-white w3-border w3-border-green w3-round-large" id="them"> Thêm</button>-->
             <div class="order-list">
                 <!-- Danh sách đơn hàng sẽ được đổ vào đây -->

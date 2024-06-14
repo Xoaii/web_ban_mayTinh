@@ -237,53 +237,76 @@
                 var orders = JSON.parse(response);
                 console.log(orders);
                 var orderListHtml = "";
+                var totalCompletedAmount = 0; // Biến lưu tổng tiền các đơn hàng đã hoàn thành
+
                 for (var order of orders) {
                     var chiTietDonHangHtml = "";
+                    var orderTotal = 0; // Tổng tiền của từng đơn hàng
+
                     for (var chiTiet of order.chi_tiet_don_hang) {
                         chiTietDonHangHtml += `
-                        <p>Tên sản phẩm: ${chiTiet.ten_san_pham}</p>
-                        <p>Số lượng: ${chiTiet.so_luong}</p>
-                        <p>Giá bán: ${chiTiet.gia_ban}</p>
+                    <p>Tên sản phẩm: ${chiTiet.ten_san_pham}</p>
+                    <p>Số lượng: ${chiTiet.so_luong}</p>
+                    <p>Giá bán: ${chiTiet.gia_ban}</p>
                     `;
+
+                        // Tính tổng tiền của từng đơn hàng
+                        orderTotal += chiTiet.so_luong * chiTiet.gia_ban;
+                    }
+
+                    if (order.trang_thai === "Thành công") {
+                        
+                        totalCompletedAmount += orderTotal; // Cộng tổng tiền của đơn hàng đã hoàn thành
                     }
 
                     orderListHtml += `
-                    <table class="w3-table-all w3-centered table">
-                        <thead>
-                            <tr class="w3-hover-green">
-                                <th>ID Đơn Hàng</th>
-                                <th>Ngày Đặt</th>
-                                <th>Trạng Thái</th>
-                                <th>Họ Tên</th>
-                                <th>Địa Chỉ</th>
-                                <th>SĐT</th>
-                                <th>Thanh Toán</th>
-                                <th>Chi Tiết Đơn Hàng</th>
-                                <th>Thao Tác</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>${order.order_id}</td>
-                                <td>${order.ngay_dat}</td>
-                                <td>${order.trang_thai}</td>
-                                <td>${order.ho_ten}</td>
-                                <td>${order.dia_chi}</td>
-                                <td>${order.sdt}</td>
-                                <td>${order.thanh_toan}</td>
-                                <td>${chiTietDonHangHtml}</td>
-                                <td>
-                                    <button class="nut-sua-xoa" data-action="edit_donHang" data-cid="${order.order_id}">Sửa</button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                <table class="w3-table-all w3-centered table">
+                    <thead>
+                        <tr class="w3-hover-green">
+                            <th>ID Đơn Hàng</th>
+                            <th>Ngày Đặt</th>
+                            <th>Trạng Thái</th>
+                            <th>Họ Tên</th>
+                            <th>Địa Chỉ</th>
+                            <th>SĐT</th>
+                            <th>Thanh Toán</th>
+                            <th>Chi Tiết Đơn Hàng</th>
+                            <th>Thao Tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>${order.order_id}</td>
+                            <td>${order.ngay_dat}</td>
+                            <td>${order.trang_thai}</td>
+                            <td>${order.ho_ten}</td>
+                            <td>${order.dia_chi}</td>
+                            <td>${order.sdt}</td>
+                            <td>${order.thanh_toan}</td>
+                            <td>${chiTietDonHangHtml}</td>
+                            <td>
+                                <button class="nut-sua-xoa" data-action="edit_donHang" data-cid="${order.order_id}">Sửa</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
                 `;
                 }
+
+                // Thêm hiển thị tổng tiền các đơn hàng đã hoàn thành
+                orderListHtml += `
+            <div class="total-completed-amount">
+                <h3>Tổng tiền các đơn hàng đã hoàn thành: ${totalCompletedAmount.toLocaleString()} VND</h3>
+            </div>
+            `;
+
                 $('.order-list').html(orderListHtml);
+                
+                
                 $('.nut-sua-xoa').click(function () {
                     var action = $(this).data('action');
                     var id = $(this).data('cid');
+                    
                     if (action == 'edit_donHang') {
                         editOrder(id, orders);
                     }
@@ -295,6 +318,7 @@
             console.error('Lỗi khi gửi yêu cầu:', error);
         });
     }
+
 
     
     function editOrder(order_id, json) {
@@ -381,5 +405,51 @@
         });
 
     }
+    //xuất ích xeo 
+    function exportToExcel(orders) {
+        // Lọc các đơn hàng có trạng thái "Thành công"
+        var completedOrders = orders.filter(order => order.trang_thai === "Thành công");
 
+        // Tạo dữ liệu cho file Excel
+        var data = [];
+        completedOrders.forEach(order => {
+            order.chi_tiet_don_hang.forEach(detail => {
+                data.push({
+                    'ID Đơn Hàng': order.order_id,
+                    'Ngày Đặt': order.ngay_dat,
+                    'Trạng Thái': order.trang_thai,
+                    'Họ Tên': order.ho_ten,
+                    'Địa Chỉ': order.dia_chi,
+                    'SĐT': order.sdt,
+                    'Thanh Toán': order.thanh_toan,
+                    'Tên Sản Phẩm': detail.ten_san_pham,
+                    'Số Lượng': detail.so_luong,
+                    'Giá Bán': detail.gia_ban
+                });
+            });
+        });
+
+        // Tạo worksheet từ dữ liệu
+        var ws = XLSX.utils.json_to_sheet(data);
+
+        // Tạo workbook và thêm worksheet vào workbook
+        var wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, 'CompletedOrders');
+
+        // Xuất file Excel
+        XLSX.writeFile(wb, 'CompletedOrders.xlsx');
+    }
+    $('#exportExcel').click(function () {
+        // Lấy dữ liệu đơn hàng từ danh sách hiển thị (có thể điều chỉnh nếu dữ liệu được lấy từ nơi khác)
+        $.post(api, { action: 'get_list_ad' }, function (response) {
+            try {
+                var orders = JSON.parse(response);
+                exportToExcel(orders);
+            } catch (error) {
+                console.error('Lỗi khi phân tích dữ liệu JSON:', error);
+            }
+        }).fail(function (xhr, status, error) {
+            console.error('Lỗi khi gửi yêu cầu:', error);
+        });
+    });
 });
