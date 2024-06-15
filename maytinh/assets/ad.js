@@ -22,11 +22,12 @@
                     action: function () {
                         var dataToSend = {
                             action: 'delete_SanPham',
-                            product_id: id, // Gửi đi id của sản phẩm cần xóa
+                            id: id, // Gửi đi id của sản phẩm cần xóa
                         };
-                        console.log(dataToSend);
+                        console.log("datagui di",dataToSend);
                         $.post(api, dataToSend, function (data) {
                             var json = JSON.parse(data); // Chuyển đổi dữ liệu JSON từ máy chủ
+                            console.log("lốc ra",json);
                             if (json.ok) { // Nếu xóa thành công
                                 deleteConfirmation.close();
                                 updateProductList(); // Cập nhật danh sách sản phẩm mới

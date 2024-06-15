@@ -787,8 +787,13 @@ $(document).ready(function () {
                   <button class="cancel-button">Hủy</button>
             </div>
         `;
+       
        /* console.log('HTML của đơn hàng:', orderHtml);*/
         $('.order-list').append(orderHtml);
+        if (order.trang_thai !== 'Đang xử lý') {  // Kiểm tra trạng thái của đơn hàng
+            $('.cancel-button').hide();           // Ẩn nút hủy đơn hàng nếu trạng thái không phải 'Đang xử lý'
+        }
+
     }
     function deleteOrder(orderId, accountId) {
         $.post(api, { action: 'delete_donHang', order_id: orderId}, function (response) {
