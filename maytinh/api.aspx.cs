@@ -270,9 +270,9 @@ namespace maytinh.images
                         // Lấy dữ liệu từ request
                         int userId = Convert.ToInt32(HttpContext.Current.Request["user_id"]);
                         string thanhToan = HttpContext.Current.Request["thanh_toan"];
-                        string hoTen = HttpContext.Current.Request["ho_ten"];
-                        string diaChi = HttpContext.Current.Request["dia_chi"];
-                        string sdt = HttpContext.Current.Request["sdt"];
+                        //string hoTen = HttpContext.Current.Request["ho_ten"];
+                        //string diaChi = HttpContext.Current.Request["dia_chi"];
+                        //string sdt = HttpContext.Current.Request["sdt"];
 
                         // Tạo bảng tạm lưu thông tin chi tiết đơn hàng
                         DataTable dt = new DataTable();
@@ -294,9 +294,9 @@ namespace maytinh.images
                         // Thêm các tham số vào stored procedure
                         cm.Parameters.AddWithValue("@user_id", userId);
                         cm.Parameters.AddWithValue("@thanh_toan", thanhToan);
-                        cm.Parameters.AddWithValue("@ho_ten", hoTen);
-                        cm.Parameters.AddWithValue("@dia_chi", diaChi);
-                        cm.Parameters.AddWithValue("@sdt", sdt);
+                        //cm.Parameters.AddWithValue("@ho_ten", hoTen);
+                        //cm.Parameters.AddWithValue("@dia_chi", diaChi);
+                        //cm.Parameters.AddWithValue("@sdt", sdt);
                         SqlParameter param = cm.Parameters.AddWithValue("@order_details", dt);
                         param.SqlDbType = SqlDbType.Structured;
                         param.TypeName = "dbo.OrderDetailsType";

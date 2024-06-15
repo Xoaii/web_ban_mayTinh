@@ -528,12 +528,16 @@ $(document).ready(function () {
     //}
 
     $('#confirm-order-btn').click(function () {
-        var hoTen = $('#user-fullname').val();
-        var diaChi = $('#user-address').val();
-        var sdt = $('#user-phone').val();
+        //var hoTen = $('#user-fullname').val();
+        //var diaChi = $('#user-address').val();
+        //var sdt = $('#user-phone').val();
         var thanhToan = $('#user-tt').val(); // Lấy phương thức thanh toán từ dropdown
 
-        if (!hoTen || !diaChi || !sdt || !thanhToan) {
+        //if (!hoTen || !diaChi || !sdt || !thanhToan) {
+        //    alert('Vui lòng điền đầy đủ thông tin đơn hàng.');
+        //    return;
+        //}
+        if (!thanhToan) {
             alert('Vui lòng điền đầy đủ thông tin đơn hàng.');
             return;
         }
@@ -555,7 +559,7 @@ $(document).ready(function () {
         console.log('Cart Items:', cartItems); // Log giỏ hàng để kiểm tra
 
         // Gọi hàm requireLogin để kiểm tra đăng nhập và thực hiện đặt hàng
-        requireLogin('insert_donHang', null, null, null, cartItems, thanhToan, hoTen, diaChi, sdt);
+        requireLogin('insert_donHang', null, null, null, cartItems, thanhToan);
     });
 
     function displayCartPay(cartItems) {
@@ -576,15 +580,13 @@ $(document).ready(function () {
 
         $('#total-price-pay').text(totalPrice.toLocaleString() + ' ₫');
     }
-    function addOrder(accountId, cartItems, thanhToan, hoTen, diaChi, sdt) {
-        console.log('Đặt hàng:', accountId, cartItems, thanhToan, hoTen, diaChi, sdt);
+    function addOrder(accountId, cartItems, thanhToan) {
+        console.log('Đặt hàng:', accountId, cartItems, thanhToan);
 
         $.post(api, {
             action: 'insert_donHang',
             user_id: accountId,
-            ho_ten: hoTen,
-            dia_chi: diaChi,
-            sdt: sdt,
+           
             thanh_toan: thanhToan,
             cart_items: JSON.stringify(cartItems)
         })
@@ -962,7 +964,7 @@ $(document).ready(function () {
     //        }
     //    });
     //}
-    function requireLogin(action, productId, giaBan, quantity, cartItems, thanhToan, hoTen, diaChi, sdt) {
+    function requireLogin(action, productId, giaBan, quantity, cartItems, thanhToan) {
         console.log('Yêu cầu đăng nhập cho hành động:', action, 'Với sản phẩm ID:', productId, 'Giá bán:', giaBan, 'Số lượng:', quantity);
         kiemTraDangNhap(function (response) {
             if (response.ok === 1) {
@@ -975,7 +977,7 @@ $(document).ready(function () {
                     buyNow(response.account_id, productId, giaBan, quantity);
                 } 
                 else if (action === 'insert_donHang') {
-                    addOrder(response.account_id, cartItems, thanhToan, hoTen, diaChi, sdt);
+                    addOrder(response.account_id, cartItems, thanhToan);
                 }
                 else if (action === 'get_list_donHang') {
                     /* loadOrders(response.account_id);*/
